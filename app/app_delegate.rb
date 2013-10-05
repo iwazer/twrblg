@@ -6,12 +6,29 @@ class AppDelegate
     true
   end
 
-  def applicationDidBecomeActive application
-    unless @twitter
-      consumer_key = 'TW-CONSUMER-KEY'.info_plist
-      secret_key = 'TW-SECRET-KEY'.info_plist
-      @twitter = STTwitterAPI.twitterAPIAppOnlyWithConsumerKey(consumer_key,
-                                                               consumerSecret:secret_key)
-    end
+  def twitter
+    @twitter ||=
+      begin
+        consumer_key = 'TW-CONSUMER-KEY'.info_plist
+        secret_key = 'TW-SECRET-KEY'.info_plist
+        STTwitterAPI.twitterAPIWithOAuthConsumerName("TwRblg",
+                                                     consumerKey: consumer_key,
+                                                     consumerSecret: secret_key)
+      end
+  end
+
+  TWITTER_ACCOUNT_KEY = "TWITTER-ACCOUNT"
+
+  def twitter_account= account
+    @twitter_account = account
+    KeyChainStore.setString(TWITTER_ACCOUNT_KEY, account.pack)
+  end
+
+  def twitter_account
+    @twitter_account ||=
+      begin
+        s = KeyChainStore.fetch(TWITTER_ACCOUNT_KEY)
+        TwitterAccount.unpack(s)
+      end
   end
 end

@@ -21,8 +21,13 @@ Motion::Project::App.setup do |app|
   app.info_plist['TW-CONSUMER-KEY'] = ENV['TW_CONSUMER_KEY'] if ENV['TW_CONSUMER_KEY']
   app.info_plist['TW-SECRET-KEY'] = ENV['TW_SECRET_KEY'] if ENV['TW_SECRET_KEY']
 
+  app.entitlements['keychain-access-groups'] = [
+    app.seed_id + '.' + app.identifier
+  ]
+
   app.pods do
     pod 'STTwitter'
+    pod 'UICKeyChainStore'
   end
 
 end
