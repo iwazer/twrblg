@@ -16,4 +16,8 @@ class NilClass
   def present?
     false
   end
+
+  def count
+    0
+  end
 end

@@ -37,7 +37,8 @@ class TwListViewController < UITableViewController
     if account
       twitter = App.shared.delegate.twitter
       successBlock = lambda {|lists|
-        # TODO
+        @data = lists
+        self.tableView.reloadData
       }
       twitter.getListsSubscribedByUsername(nil,
                                            orUserID: nil,
@@ -47,5 +48,28 @@ class TwListViewController < UITableViewController
                                              App.alert(error.localizedDescription.to_s)
                                            })
     end
+  end
+
+  def numberOfSectionsInTableView tableView
+    1
+  end
+
+  def tableView tableView, numberOfRowsInSection: section
+    @data.count
+  end
+
+  def tableView tableView, cellForRowAtIndexPath: indexPath
+    @@cellIdentifier = "TwitterListCell"
+    cell = tableView.dequeueReusableCellWithIdentifier(@@cellIdentifier)
+    unless cell
+      cell = UITableViewCell.alloc.initWithStyle(
+        UITableViewCellStyleSubtitle, reuseIdentifier:@@cellIdentifier)
+      cell.textLabel.minimumScaleFactor = 10.0/15
+      cell.textLabel.adjustsFontSizeToFitWidth = true
+    end
+    row = @data[indexPath.row]
+    cell.textLabel.text = row["name"]
+    cell.detailTextLabel.text = row["description"]
+    cell
   end
 end
