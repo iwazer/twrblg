@@ -4,7 +4,7 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3742"/>
     </dependencies>
     <scenes>
-        <!--Tw List View Controller - Root View Controller-->
+        <!--Tw List View Controller - Title-->
         <scene sceneID="pFa-hJ-2Om">
             <objects>
                 <tableViewController id="5qR-oD-H12" customClass="TwListViewController" sceneMemberID="viewController">
@@ -23,7 +23,13 @@
                             </tableViewCell>
                         </prototypes>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Root View Controller" id="UZm-Kt-JQE"/>
+                    <navigationItem key="navigationItem" title="Title" id="eVK-p4-pZq">
+                        <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="Tma-SD-gbQ">
+                            <connections>
+                                <action selector="on_reload:" destination="5qR-oD-H12" id="9Ce-f4-cn5"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WdJ-mR-8VK" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>

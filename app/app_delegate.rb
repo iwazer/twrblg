@@ -11,9 +11,18 @@ class AppDelegate
       begin
         consumer_key = 'TW-CONSUMER-KEY'.info_plist
         secret_key = 'TW-SECRET-KEY'.info_plist
-        STTwitterAPI.twitterAPIWithOAuthConsumerName("TwRblg",
-                                                     consumerKey: consumer_key,
-                                                     consumerSecret: secret_key)
+        account = twitter_account
+        if account
+          STTwitterAPI.twitterAPIWithOAuthConsumerName("TwRblg",
+                                                       consumerKey: consumer_key,
+                                                       consumerSecret: secret_key,
+                                                       oauthToken: account.oauth_token,
+                                                       oauthTokenSecret: account.oauth_token_secret)
+        else
+          STTwitterAPI.twitterAPIWithOAuthConsumerName("TwRblg",
+                                                       consumerKey: consumer_key,
+                                                       consumerSecret: secret_key)
+        end
       end
   end
 

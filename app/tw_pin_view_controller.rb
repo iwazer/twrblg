@@ -1,11 +1,12 @@
 class TwPinViewController < UIViewController
-  attr_accessor :url
+  attr_writer :url, :callback_at_poped
+
   def viewDidLoad
     @web_view = UIWebView.new
     @web_view.scalesPageToFit = true
     @web_view.delegate = self
     self.view = @web_view
-    req = NSURLRequest.requestWithURL url
+    req = NSURLRequest.requestWithURL @url
     @web_view.loadRequest req
   end
 
@@ -18,6 +19,7 @@ class TwPinViewController < UIViewController
       successBlock = lambda { |oauthToken,oauthTokenSecret,userID,screenName|
         account = TwitterAccount.new(userID, oauthToken, oauthTokenSecret, screenName)
         App.shared.delegate.twitter_account = account
+        @callback_at_poped.call
       }
       twitter.postAccessTokenRequestWithPIN(pin_code,
                                             successBlock: successBlock,
