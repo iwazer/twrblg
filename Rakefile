@@ -9,13 +9,20 @@ rescue LoadError
 end
 
 Motion::Project::App.setup do |app|
-  # Use `rake config' to see complete project settings.
+
   app.name = 'twrblg'
   app.info_plist['UIMainStoryboardFile'] = 'Storyboard'
 
   app.frameworks += ["Accounts","Twitter","Social"]
 
+  app.codesign_certificate = ENV['CODESIGN_CERTIFICATE'] if ENV['CODESIGN_CERTIFICATE']
+  app.provisioning_profile = ENV['PROVISIONING_PROFILE'] if ENV['PROVISIONING_PROFILE']
+
+  app.info_plist['TW-CONSUMER-KEY'] = ENV['TW_CONSUMER_KEY'] if ENV['TW_CONSUMER_KEY']
+  app.info_plist['TW-SECRET-KEY'] = ENV['TW_SECRET_KEY'] if ENV['TW_SECRET_KEY']
+
   app.pods do
     pod 'STTwitter'
   end
+
 end
