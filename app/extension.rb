@@ -32,4 +32,8 @@ class NilClass
   def blank_then_nil
     self
   end
+
+  def empty?
+    true
+  end
 end
