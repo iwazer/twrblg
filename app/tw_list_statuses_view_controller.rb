@@ -62,4 +62,16 @@ class TwListStatusesViewController < UITableViewController
     cell.detailTextLabel.text = status["text"]
     cell
   end
+
+  def tableView tableView, didSelectRowAtIndexPath:indexPath
+    @selected_status = @data[indexPath.row]
+    self.performSegueWithIdentifier("ShowStatus", sender:self)
+  end
+
+  def prepareForSegue segue, sender:sender
+    if segue.identifier == "ShowStatus"
+      controller = segue.destinationViewController
+      controller.status = @selected_status
+    end
+  end
 end
