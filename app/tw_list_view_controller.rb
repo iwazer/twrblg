@@ -7,6 +7,7 @@ class TwListViewController < UITableViewController
                                                    selector:'applicationDidBecomeActive',
                                                    name:UIApplicationDidBecomeActiveNotification,
                                                    object:nil)
+    navigationController.interactivePopGestureRecognizer.enabled = true
   end
 
   # 起動時にTwitterアカウントがまだなければOAuthToken/Secretを取得する
