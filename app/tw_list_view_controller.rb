@@ -67,9 +67,21 @@ class TwListViewController < UITableViewController
       cell.textLabel.minimumScaleFactor = 10.0/15
       cell.textLabel.adjustsFontSizeToFitWidth = true
     end
-    row = @data[indexPath.row]
-    cell.textLabel.text = row["name"]
-    cell.detailTextLabel.text = row["description"]
+    list = @data[indexPath.row]
+    cell.textLabel.text = list["name"]
+    cell.detailTextLabel.text = list["description"]
     cell
+  end
+
+  def tableView tableView, didSelectRowAtIndexPath:indexPath
+    @selected_list = @data[indexPath.row]
+    self.performSegueWithIdentifier("ListStatuses", sender:self)
+  end
+
+  def prepareForSegue segue, sender:sender
+    if segue.identifier == "ListStatuses"
+      controller = segue.destinationViewController
+      controller.list = @selected_list
+    end
   end
 end

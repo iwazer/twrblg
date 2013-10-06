@@ -6,6 +6,14 @@ class NSString
   def present?
     !self.blank?
   end
+
+  def blank_then_nil
+    if self.blank?
+      nil
+    else
+      self
+    end
+  end
 end
 
 class NilClass
@@ -19,5 +27,9 @@ class NilClass
 
   def count
     0
+  end
+
+  def blank_then_nil
+    self
   end
 end
