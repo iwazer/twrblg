@@ -24,4 +24,8 @@ class TwShowStatusViewController < UIViewController
       navigationController.toolbarHidden = true
     end
   end
+
+  def on_reblog
+    # TMAPIClient.sharedInstance.
+  end
 end

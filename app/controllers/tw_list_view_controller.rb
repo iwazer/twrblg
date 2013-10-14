@@ -15,7 +15,7 @@ class TwListViewController < UITableViewController
     account = App.shared.delegate.twitter_account
     unless account
       twitter = App.shared.delegate.twitter
-      callback_at_poped = lambda { self.on_reload(self) }
+      callback_at_poped = lambda { self.reload(self) }
       successBlock = lambda {|url, oauthToken|
         controller = TwPinViewController.new
         controller.url = url
@@ -29,11 +29,15 @@ class TwListViewController < UITableViewController
                                  App.alert(error.localizedDescription.to_s)
                                })
     else
-      on_reload(self)
+      reload(self)
     end
   end
 
-  def on_reload sender
+  def settings sender
+    puts 'settings'
+  end
+
+  def reload sender
     account = App.shared.delegate.twitter_account
     if account
       twitter = App.shared.delegate.twitter

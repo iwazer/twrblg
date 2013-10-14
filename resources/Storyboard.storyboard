@@ -24,9 +24,9 @@
                         </prototypes>
                     </tableView>
                     <navigationItem key="navigationItem" title="Your Lists" id="eVK-p4-pZq">
-                        <barButtonItem key="rightBarButtonItem" systemItem="refresh" id="Tma-SD-gbQ">
+                        <barButtonItem key="rightBarButtonItem" image="settings.png" style="plain" id="Tma-SD-gbQ">
                             <connections>
-                                <action selector="on_reload:" destination="5qR-oD-H12" id="9Ce-f4-cn5"/>
+                                <segue destination="feF-UC-6Q5" kind="modal" id="a5F-yt-81C"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -69,6 +69,34 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cQE-6W-Nf4" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1169" y="116"/>
+        </scene>
+        <!--Settings View Controller-->
+        <scene sceneID="WkY-AZ-hPs">
+            <objects>
+                <tableViewController id="feF-UC-6Q5" customClass="SettingsViewController" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="bw1-d4-hRH" customClass="SettingsView">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="WFO-1S-apv">
+                                <rect key="frame" x="0.0" y="55" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="WFO-1S-apv" id="mAm-gv-2aE">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="feF-UC-6Q5" id="z5W-tz-2eG"/>
+                            <outlet property="delegate" destination="feF-UC-6Q5" id="YlX-4s-C2D"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vq3-xh-QpA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1169" y="901"/>
         </scene>
         <!--Tw Show Status View Controller-->
         <scene sceneID="myK-yY-8rR">
@@ -131,6 +159,10 @@
             <point key="canvasLocation" x="140" y="116"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="reblog.png" width="60" height="60"/>
+        <image name="settings.png" width="26" height="26"/>
+    </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>
