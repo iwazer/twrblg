@@ -3,7 +3,22 @@ class AppDelegate
   attr_reader :twitter
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
-    true
+    TMAPIClient.sharedInstance.OAuthConsumerKey = 'TM-CONSUMER-KEY'.info_plist
+    TMAPIClient.sharedInstance.OAuthConsumerSecret = 'TM-SECRET-KEY'.info_plist
+    TMAPIClient.sharedInstance.authenticate("com.iwazer.twrblg", callback: -> (error) {
+                                              unless error
+                                                App.alert("Tumblr authorization is success")
+                                              else
+                                                msg = error.localizedDescription
+                                                App.alert("Tumblr authorization is failed: #{msg}")
+                                              end
+                                            })
+   true
+  end
+
+  def application application,
+    openURL: url, sourceApplication: sourceApplication, annotation: annotation
+    TMAPIClient.sharedInstance.handleOpenURL(url)
   end
 
   def twitter

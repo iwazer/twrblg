@@ -20,6 +20,13 @@ Motion::Project::App.setup do |app|
 
   app.info_plist['TW-CONSUMER-KEY'] = ENV['TW_CONSUMER_KEY'] if ENV['TW_CONSUMER_KEY']
   app.info_plist['TW-SECRET-KEY'] = ENV['TW_SECRET_KEY'] if ENV['TW_SECRET_KEY']
+  app.info_plist['TM-CONSUMER-KEY'] = ENV['TM_CONSUMER_KEY'] if ENV['TM_CONSUMER_KEY']
+  app.info_plist['TM-SECRET-KEY'] = ENV['TM_SECRET_KEY'] if ENV['TM_SECRET_KEY']
+
+  app.info_plist['CFBundleURLTypes'] = [{
+      'CFBundleURLName' => 'twrblg',
+      'CFBundleURLSchemes' => ['com.iwazer.twrblg']
+  }]
 
   app.entitlements['keychain-access-groups'] = [
     app.seed_id + '.' + app.identifier
@@ -28,6 +35,7 @@ Motion::Project::App.setup do |app|
   app.pods do
     pod 'STTwitter'
     pod 'UICKeyChainStore'
+    pod 'TMTumblrSDK'
   end
 
 end
