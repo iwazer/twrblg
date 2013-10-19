@@ -14,4 +14,8 @@ class NSString
       self
     end
   end
+
+  def nil_then_blank
+    self
+  end
 end

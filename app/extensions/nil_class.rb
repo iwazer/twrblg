@@ -15,6 +15,10 @@ class NilClass
     self
   end
 
+  def nil_then_blank
+    ""
+  end
+
   def empty?
     true
   end

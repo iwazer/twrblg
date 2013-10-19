@@ -5,14 +5,6 @@ class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     TMAPIClient.sharedInstance.OAuthConsumerKey = 'TM-CONSUMER-KEY'.info_plist
     TMAPIClient.sharedInstance.OAuthConsumerSecret = 'TM-SECRET-KEY'.info_plist
-    TMAPIClient.sharedInstance.authenticate("com.iwazer.twrblg", callback: -> (error) {
-                                              unless error
-                                                App.alert("Tumblr authorization is success")
-                                              else
-                                                msg = error.localizedDescription
-                                                App.alert("Tumblr authorization is failed: #{msg}")
-                                              end
-                                            })
    true
   end
 
@@ -54,5 +46,11 @@ class AppDelegate
         s = KeyChainStore.fetch(TWITTER_ACCOUNT_KEY)
         TwitterAccount.unpack(s)
       end
+  end
+
+  def tumblr_account= account
+  end
+
+  def tumblr_account
   end
 end

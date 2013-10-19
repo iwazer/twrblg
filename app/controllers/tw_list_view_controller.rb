@@ -10,31 +10,29 @@ class TwListViewController < UITableViewController
     navigationController.interactivePopGestureRecognizer.enabled = true
   end
 
-  # 起動時にTwitterアカウントがまだなければOAuthToken/Secretを取得する
+  def viewDidAppear animated
+    if @reserve_open_settings
+      open_settings
+    end
+  end
+
+  # 起動時にTwitterアカウントがまだなければ設定画面を開く
   def applicationDidBecomeActive
     account = App.shared.delegate.twitter_account
+    @reserve_open_settings = nil
     unless account
-      twitter = App.shared.delegate.twitter
-      callback_at_poped = lambda { self.reload(self) }
-      successBlock = lambda {|url, oauthToken|
-        controller = TwPinViewController.new
-        controller.url = url
-        controller.callback_at_poped = callback_at_poped
-        self.navigationController.pushViewController(controller,
-                                                     animated:true)
-      }
-      twitter.postTokenRequest(successBlock,
-                               oauthCallback: "",
-                               errorBlock: lambda { |error|
-                                 App.alert(error.localizedDescription.to_s)
-                               })
+      @reserve_open_settings = true
     else
       reload(self)
     end
   end
 
   def settings sender
-    puts 'settings'
+    open_settings
+  end
+
+  def open_settings
+    self.performSegueWithIdentifier("ShowSettings", sender:self)
   end
 
   def reload sender
@@ -84,9 +82,11 @@ class TwListViewController < UITableViewController
   end
 
   def prepareForSegue segue, sender:sender
-    if segue.identifier == "ListStatuses"
-      controller = segue.destinationViewController
+    controller = segue.destinationViewController
+    case segue.identifier
+    when "ListStatuses"
       controller.list = @selected_list
+    when "ShowSettings"
     end
   end
 end

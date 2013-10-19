@@ -26,12 +26,13 @@
                     <navigationItem key="navigationItem" title="Your Lists" id="eVK-p4-pZq">
                         <barButtonItem key="rightBarButtonItem" image="settings.png" style="plain" id="Tma-SD-gbQ">
                             <connections>
-                                <segue destination="feF-UC-6Q5" kind="modal" id="a5F-yt-81C"/>
+                                <action selector="settings:" destination="5qR-oD-H12" id="h9V-3I-oh9"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
                         <segue destination="4oC-GD-Ayr" kind="push" identifier="ListStatuses" id="C67-Le-vsi"/>
+                        <segue destination="YXu-Ge-Fq3" kind="modal" identifier="ShowSettings" id="Iek-GX-czL"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="WdJ-mR-8VK" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -70,33 +71,61 @@
             </objects>
             <point key="canvasLocation" x="1169" y="116"/>
         </scene>
-        <!--Settings View Controller-->
-        <scene sceneID="WkY-AZ-hPs">
+        <!--Settings View Controller - Settings-->
+        <scene sceneID="LzD-E9-3mi">
             <objects>
-                <tableViewController id="feF-UC-6Q5" customClass="SettingsViewController" sceneMemberID="viewController">
-                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="bw1-d4-hRH" customClass="SettingsView">
+                <tableViewController title="Settings" id="DeR-Z7-i0h" customClass="SettingsViewController" sceneMemberID="viewController">
+                    <tableView key="view" opaque="NO" clipsSubviews="YES" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="10" sectionFooterHeight="10" id="Dnf-7w-aYN">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <prototypes>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="WFO-1S-apv">
-                                <rect key="frame" x="0.0" y="55" width="320" height="44"/>
+                            <tableViewCell contentMode="scaleToFill" restorationIdentifier="SettingsViewCell" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="SettingsViewCell" id="JPB-Ug-vL2" customClass="SettingsViewCell">
+                                <rect key="frame" x="0.0" y="119" width="320" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="WFO-1S-apv" id="mAm-gv-2aE">
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="JPB-Ug-vL2" id="N3p-i7-ojF">
                                     <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                                     <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="No connection" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9KC-sz-dgB">
+                                            <rect key="frame" x="100" y="11" width="200" height="21"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <accessibility key="accessibilityConfiguration" label="aaa"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="status" destination="9KC-sz-dgB" id="0eg-Oy-rdL"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="feF-UC-6Q5" id="z5W-tz-2eG"/>
-                            <outlet property="delegate" destination="feF-UC-6Q5" id="YlX-4s-C2D"/>
-                        </connections>
                     </tableView>
+                    <navigationItem key="navigationItem" title="Root View Controller" id="Dks-M3-HPq">
+                        <barButtonItem key="rightBarButtonItem" style="done" systemItem="done" id="UK9-mb-ZWT"/>
+                    </navigationItem>
                 </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="vq3-xh-QpA" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vya-jh-PVS" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1169" y="901"/>
+            <point key="canvasLocation" x="1649" y="824"/>
+        </scene>
+        <!--Navigation Controller - Settings-->
+        <scene sceneID="Cmf-CC-PWV">
+            <objects>
+                <navigationController title="Settings" definesPresentationContext="YES" id="YXu-Ge-Fq3" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="4xA-Sz-gCu">
+                        <rect key="frame" x="0.0" y="0.0" width="0.0" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="DeR-Z7-i0h" kind="relationship" relationship="rootViewController" id="nCa-cm-vmC"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="uFf-23-WFt" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1169" y="824"/>
         </scene>
         <!--Tw Show Status View Controller-->
         <scene sceneID="myK-yY-8rR">
