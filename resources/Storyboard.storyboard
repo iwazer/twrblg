@@ -104,17 +104,21 @@
                         </prototypes>
                     </tableView>
                     <navigationItem key="navigationItem" title="Root View Controller" id="Dks-M3-HPq">
-                        <barButtonItem key="rightBarButtonItem" style="done" systemItem="done" id="UK9-mb-ZWT"/>
+                        <barButtonItem key="rightBarButtonItem" style="done" systemItem="done" id="UK9-mb-ZWT">
+                            <connections>
+                                <action selector="dismiss:" destination="DeR-Z7-i0h" id="Mfp-w3-EP6"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vya-jh-PVS" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1649" y="824"/>
         </scene>
-        <!--Navigation Controller - Settings-->
+        <!--Settings Nav Controller - Settings-->
         <scene sceneID="Cmf-CC-PWV">
             <objects>
-                <navigationController title="Settings" definesPresentationContext="YES" id="YXu-Ge-Fq3" sceneMemberID="viewController">
+                <navigationController title="Settings" definesPresentationContext="YES" id="YXu-Ge-Fq3" customClass="SettingsNavController" sceneMemberID="viewController">
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="4xA-Sz-gCu">
                         <rect key="frame" x="0.0" y="0.0" width="0.0" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>

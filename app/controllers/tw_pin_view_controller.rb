@@ -16,10 +16,10 @@ class TwPinViewController < UIViewController
     pin_code = get_pin_code
     if pin_code.present?
       twitter = App.shared.delegate.twitter
-      successBlock = lambda { |oauthToken,oauthTokenSecret,userID,screenName|
+      successBlock = -> (oauthToken,oauthTokenSecret,userID,screenName) {
         account = TwitterAccount.new(userID, oauthToken, oauthTokenSecret, screenName)
         App.shared.delegate.twitter_account = account
-        @callback_at_poped.call
+        @callback_at_poped.call(account)
       }
       twitter.postAccessTokenRequestWithPIN(pin_code,
                                             successBlock: successBlock,

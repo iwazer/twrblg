@@ -7,7 +7,8 @@ class SettingsViewCell < UITableViewCell
     super
   end
 
-  def update_status s
-    status.text = s.nil_then_blank
+  def update_status account
+    @default_value ||= status.text
+    status.text = account.nil? ? @default_value : account.screen_name
   end
 end

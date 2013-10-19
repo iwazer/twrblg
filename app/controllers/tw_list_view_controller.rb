@@ -87,6 +87,10 @@ class TwListViewController < UITableViewController
     when "ListStatuses"
       controller.list = @selected_list
     when "ShowSettings"
+      controller.dismiss = -> {
+        dismissModalViewControllerAnimated(true)
+        reload(self)
+      }
     end
   end
 end

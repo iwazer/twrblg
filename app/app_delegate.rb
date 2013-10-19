@@ -13,13 +13,13 @@ class AppDelegate
     TMAPIClient.sharedInstance.handleOpenURL(url)
   end
 
-  def twitter
-    @twitter ||=
+  def twitter reconnect=false
+    twitter =
       begin
         consumer_key = 'TW-CONSUMER-KEY'.info_plist
         secret_key = 'TW-SECRET-KEY'.info_plist
         account = twitter_account
-        if account
+        if account && !reconnect
           STTwitterAPI.twitterAPIWithOAuthConsumerName("TwRblg",
                                                        consumerKey: consumer_key,
                                                        consumerSecret: secret_key,
@@ -31,6 +31,11 @@ class AppDelegate
                                                        consumerSecret: secret_key)
         end
       end
+    if reconnect
+      @twitter = twitter
+    else
+      @twitter ||= twitter
+    end
   end
 
   TWITTER_ACCOUNT_KEY = "TWITTER-ACCOUNT"
@@ -41,7 +46,7 @@ class AppDelegate
   end
 
   def twitter_account
-    @twitter_account ||=
+    @twitter_account =
       begin
         s = KeyChainStore.fetch(TWITTER_ACCOUNT_KEY)
         TwitterAccount.unpack(s)
