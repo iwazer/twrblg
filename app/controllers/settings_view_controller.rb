@@ -37,6 +37,7 @@ class SettingsViewController < UITableViewController
     when :twitter
       twitter_authorize
     when :tumblr
+      tumblr_authenticate
     end
   end
 
@@ -46,8 +47,7 @@ class SettingsViewController < UITableViewController
       controller = TwPinViewController.new
       controller.url = url
       controller.callback_at_poped = -> (account) {
-        type = account.is_a?(TwitterAccount) ? 0 : 1
-        @data[type][:account] = account
+        @data[0][:account] = account
         self.tableView.reloadData
       }
       navigationController.pushViewController(controller,
@@ -61,14 +61,21 @@ class SettingsViewController < UITableViewController
   end
 
   def tumblr_authenticate
-    TMAPIClient.sharedInstance.authenticate("com.iwazer.twrblg", callback: -> (error) {
-                                              unless error
-                                                App.alert("Tumblr authorization is success")
-                                              else
-                                                msg = error.localizedDescription
-                                                App.alert("Tumblr authorization is failed: #{msg}")
-                                              end
-                                            })
+    callback = -> (error) {
+      unless error
+        user_info_callback = -> (result,error) {
+          account = TumblrAccount.new(result["user"])
+          App.shared.delegate.tumblr_account = account
+          @data[1][:account] = account
+          self.tableView.reloadData
+        }
+        TMAPIClient.sharedInstance.userInfo(user_info_callback)
+      else
+        msg = error.localizedDescription
+        App.alert("Tumblr authorization is failed: #{msg}")
+      end
+    }
+    TMAPIClient.sharedInstance.authenticate("com.iwazer.twrblg", callback: callback)
   end
 
   def dismiss target

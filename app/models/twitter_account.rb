@@ -24,4 +24,8 @@ class TwitterAccount
   def inspect
     [user_id, oauth_token, oauth_token_secret, screen_name].join(" ")
   end
+
+  def name
+    @screen_name
+  end
 end
