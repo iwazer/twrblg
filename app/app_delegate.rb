@@ -3,6 +3,8 @@ class AppDelegate
   attr_reader :twitter
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
+    @window.styleMode = PXStylingNormal
+
     TMAPIClient.sharedInstance.OAuthConsumerKey = 'TM-CONSUMER-KEY'.info_plist
     TMAPIClient.sharedInstance.OAuthConsumerSecret = 'TM-SECRET-KEY'.info_plist
 

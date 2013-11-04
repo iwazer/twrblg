@@ -13,7 +13,7 @@ Motion::Project::App.setup do |app|
   app.name = 'twrblg'
   app.info_plist['UIMainStoryboardFile'] = 'Storyboard'
 
-  app.frameworks += ["Accounts","Twitter","Social"]
+  app.frameworks += ["Accounts","Twitter","Social","CoreText","QuartzCore"]
 
   app.codesign_certificate = ENV['CODESIGN_CERTIFICATE'] if ENV['CODESIGN_CERTIFICATE']
   app.provisioning_profile = ENV['PROVISIONING_PROFILE'] if ENV['PROVISIONING_PROFILE']
@@ -22,6 +22,10 @@ Motion::Project::App.setup do |app|
   app.info_plist['TW-SECRET-KEY'] = ENV['TW_SECRET_KEY']
   app.info_plist['TM-CONSUMER-KEY'] = ENV['TM_CONSUMER_KEY']
   app.info_plist['TM-SECRET-KEY'] = ENV['TM_SECRET_KEY']
+
+  app.pixate.user = ENV['PIXATE_USER']
+  app.pixate.key = ENV['PIXATE_KEY']
+  app.pixate.framework = 'vendor/Pixate.framework'
 
   app.info_plist['CFBundleURLTypes'] = [{
       'CFBundleURLName' => 'twrblg',

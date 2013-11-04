@@ -1,0 +1,15 @@
+navigation-bar {
+  background-color : linear-gradient(#222222, #202020);
+}
+
+table-view {
+  background-color: #444;
+}
+table-view-cell {
+  background-color: #555;
+}
+
+#tumblrComment {
+  border-radius: 5px;
+  background-color: #eee;
+}

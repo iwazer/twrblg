@@ -10,6 +10,7 @@ class TbrPostViewController < UIViewController
 
   def viewDidLoad
     @inputAccessoryView = XCDFormInputAccessoryView.new
+    navigationItem.setRightBarButtonItem(nil, animated:true)
     postImageView.image = @image
     @account = App.shared.delegate.tumblr_account
     @postBlogLabel.text = @account.blog.try(:name)
@@ -62,10 +63,6 @@ class TbrPostViewController < UIViewController
                                options: animationCurve << 16,
                                animations: animations,
                                completion: nil)
-
-    doneItem = UIBarButtonItem.alloc.initWithBarButtonSystemItem(UIBarButtonSystemItemDone,
-                                                                 target: self,
-                                                                 action: "doneAction:")
   end
 
   def keybaordWillHide notification
@@ -114,7 +111,7 @@ class TbrPostViewController < UIViewController
       begin
         sheet = UIActionSheet.alloc.initWithTitle(nil,
                                                   delegate: nil,
-                                                  cancelButtonTitle: nil,
+                                                  cancelButtonTitle: "cancel",
                                                   destructiveButtonTitle: nil,
                                                   otherButtonTitles: nil)
 
@@ -149,5 +146,6 @@ class TbrPostViewController < UIViewController
     @postBlogLabel.text = @account.blogs[row].title
     App.shared.delegate.tumblr_account = @account
     @action_sheet.dismissWithClickedButtonIndex(0, animated: true)
+    navigationItem.setRightBarButtonItem(nil, animated:true)
   end
 end
