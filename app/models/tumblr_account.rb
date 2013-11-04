@@ -42,6 +42,10 @@ class TumblrAccount
     blogs << blog
   end
 
+  def blog
+    blogs[@default_blog_index]
+  end
+
   def self.unpack s
     if s.present?
       info = s.split("\1")

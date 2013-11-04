@@ -64,7 +64,7 @@
                     </tableView>
                     <navigationItem key="navigationItem" id="SIV-Cw-2Wf"/>
                     <connections>
-                        <segue destination="zSh-cL-l8G" kind="push" identifier="ShowStatus" id="xlp-FE-EBV"/>
+                        <segue destination="bcE-sK-ag2" kind="push" identifier="TbrPostView" id="Tu9-fb-z3X"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="cQE-6W-Nf4" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -139,39 +139,32 @@
                         <viewControllerLayoutGuide type="top" id="9q0-LZ-y9g"/>
                         <viewControllerLayoutGuide type="bottom" id="lmm-H6-odC"/>
                     </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="ICu-wk-de7">
+                    <scrollView key="view" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" id="km5-zQ-7ee">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="moH-Nc-hsl">
-                                <rect key="frame" x="5" y="170" width="310" height="200"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                            </imageView>
-                            <pickerView contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="hhO-w5-6iJ">
-                                <rect key="frame" x="0.0" y="361" width="320" height="162"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
-                                <connections>
-                                    <outlet property="dataSource" destination="bcE-sK-ag2" id="j52-Lp-dD2"/>
-                                    <outlet property="delegate" destination="bcE-sK-ag2" id="Zmk-SI-g0Q"/>
-                                </connections>
-                            </pickerView>
-                            <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="投稿するブログを選択" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="E7R-Nk-aQM">
-                                <rect key="frame" x="10" y="378" width="175" height="21"/>
+                            <label opaque="NO" clipsSubviews="YES" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="sYm-cw-ODY">
+                                <rect key="frame" x="5" y="5" width="310" height="30"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <gestureRecognizers/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="18"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="KaB-ks-lBb">
-                                <rect key="frame" x="5" y="70" width="310" height="95"/>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6T1-ZV-7T2">
+                                <rect key="frame" x="5" y="35" width="310" height="200"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                            </imageView>
+                            <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Pfg-mw-Emr">
+                                <rect key="frame" x="5" y="240" width="310" height="210"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                             </textView>
                         </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                    </view>
+                    </scrollView>
                     <toolbarItems>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="Xqc-tn-M04"/>
                         <barButtonItem image="reblog.png" id="ayV-CD-dYN">
@@ -182,55 +175,16 @@
                     </toolbarItems>
                     <navigationItem key="navigationItem" id="Dv6-Za-88W"/>
                     <connections>
-                        <outlet property="postBlogPickerView" destination="hhO-w5-6iJ" id="WOi-7P-ywV"/>
-                        <outlet property="postImageView" destination="moH-Nc-hsl" id="lnr-Qy-pf9"/>
-                        <outlet property="postTextView" destination="KaB-ks-lBb" id="1tI-hU-u4c"/>
+                        <outlet property="postBlogLabel" destination="sYm-cw-ODY" id="eYR-Kj-nie"/>
+                        <outlet property="postImageView" destination="6T1-ZV-7T2" id="eJf-Po-hK8"/>
+                        <outlet property="postTextView" destination="Pfg-mw-Emr" id="JRE-EJ-TzM"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="4Cv-vM-pkF" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2140" y="116"/>
-        </scene>
-        <!--Tw Show Status View Controller-->
-        <scene sceneID="myK-yY-8rR">
-            <objects>
-                <viewController id="zSh-cL-l8G" customClass="TwShowStatusViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="97S-Dz-m6M"/>
-                        <viewControllerLayoutGuide type="bottom" id="JjJ-pG-26a"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="Lnz-Tv-jwc">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <subviews>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6Rl-rE-HIm">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <connections>
-                                    <outletCollection property="gestureRecognizers" destination="sCu-yM-yf7" appends="YES" id="HFq-FO-IBy"/>
-                                </connections>
-                            </imageView>
-                        </subviews>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                    </view>
-                    <toolbarItems>
-                        <barButtonItem style="plain" systemItem="flexibleSpace" id="hxz-2g-2tm"/>
-                        <barButtonItem image="reblog.png" id="728-ZV-fGO">
-                            <connections>
-                                <action selector="on_reblog" destination="zSh-cL-l8G" id="kV2-W7-0Na"/>
-                            </connections>
-                        </barButtonItem>
-                    </toolbarItems>
-                    <navigationItem key="navigationItem" id="l42-t4-e29"/>
+                <tapGestureRecognizer id="z4b-NU-D1D">
                     <connections>
-                        <segue destination="bcE-sK-ag2" kind="push" identifier="TumblrPost" id="KR0-7j-X1e"/>
-                    </connections>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="O05-Vs-fS3" userLabel="First Responder" sceneMemberID="firstResponder"/>
-                <tapGestureRecognizer id="sCu-yM-yf7">
-                    <connections>
-                        <action selector="view_tapped:" destination="zSh-cL-l8G" id="WuH-66-eZQ"/>
-                        <outlet property="delegate" destination="zSh-cL-l8G" id="hjK-rP-n1i"/>
+                        <action selector="blog_label_tapped" destination="bcE-sK-ag2" id="MTh-Gg-rqr"/>
+                        <outlet property="delegate" destination="bcE-sK-ag2" id="qne-fU-l2c"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>

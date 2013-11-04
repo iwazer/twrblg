@@ -64,14 +64,17 @@ class TwListStatusesViewController < UITableViewController
   end
 
   def tableView tableView, didSelectRowAtIndexPath:indexPath
-    @selected_status = @data[indexPath.row]
-    self.performSegueWithIdentifier("ShowStatus", sender:self)
+    @status = @data[indexPath.row]
+    self.performSegueWithIdentifier("TbrPostView", sender:self)
   end
 
   def prepareForSegue segue, sender:sender
-    if segue.identifier == "ShowStatus"
+    if segue.identifier == "TbrPostView"
       controller = segue.destinationViewController
-      controller.status = @selected_status
+      controller.status = @status
+      url = @status["entities"]["media"].first["media_url"]
+      url = NSURL.URLWithString url if url.is_a?(String)
+      controller.image = UIImage.imageWithData(NSData.dataWithContentsOfURL(url))
     end
   end
 end

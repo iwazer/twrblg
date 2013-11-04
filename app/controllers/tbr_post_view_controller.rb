@@ -6,13 +6,82 @@ class TbrPostViewController < UIViewController
 
   outlet :postTextView, UITextView
   outlet :postImageView, UIImageView
-  outlet :postBlogPickerView, UIPickerView
+  outlet :postBlogLabel, UILabel
 
   def viewDidLoad
     @inputAccessoryView = XCDFormInputAccessoryView.new
     postImageView.image = @image
     @account = App.shared.delegate.tumblr_account
+    @postBlogLabel.text = @account.blog.try(:name)
     self.postTextView.text = @status["text"]
+  end
+
+  def viewWillAppear animated
+    super
+
+    unless @registered
+      center = NSNotificationCenter.defaultCenter
+      center.addObserver(self,
+                         selector: "keyboardWillShow:",
+                         name: UIKeyboardWillShowNotification,
+                         object: nil)
+      center.addObserver(self,
+                         selector: "keybaordWillHide:",
+                         name: UIKeyboardWillHideNotification,
+                         object: nil)
+    end
+  end
+
+  def viewWillDisappear animated
+    super
+
+    if @registered
+      center = NSNotificationCenter.defaultCenter
+      center.removeObserver(self,
+                            name: UIKeyboardWillShowNotification,
+                            object: nil)
+      center.removeObserver(self,
+                            name: UIKeyboardWillHideNotification,
+                            object: nil)
+      @registered = false
+    end
+  end
+
+  def keyboardWillShow notification
+    offset = view.contentOffset
+    offset.y = offset.y += 210
+
+    userInfo = notification.userInfo
+    duration = userInfo[UIKeyboardAnimationDurationUserInfoKey].to_f
+    animationCurve = userInfo[UIKeyboardAnimationCurveUserInfoKey].to_i
+    animations = -> {
+      view.contentOffset = offset
+    }
+    UIView.animateWithDuration(duration,
+                               delay: 0.0,
+                               options: animationCurve << 16,
+                               animations: animations,
+                               completion: nil)
+
+    doneItem = UIBarButtonItem.alloc.initWithBarButtonSystemItem(UIBarButtonSystemItemDone,
+                                                                 target: self,
+                                                                 action: "doneAction:")
+  end
+
+  def keybaordWillHide notification
+    offset = view.contentOffset
+    offset.y -= 210
+    userInfo = notification.userInfo
+    duration = userInfo[UIKeyboardAnimationDurationUserInfoKey].to_f
+    animationCurve = userInfo[UIKeyboardAnimationCurveUserInfoKey].to_i
+    animations = -> {
+      view.contentOffset = offset
+    }
+    UIView.animateWithDuration(duration,
+                               delay: 0.0,
+                               options: animationCurve << 16,
+                               animations: animations,
+                               completion:nil)
   end
 
   def reblog sender
@@ -40,6 +109,29 @@ class TbrPostViewController < UIViewController
     @inputAccessoryView
   end
 
+  def blog_label_tapped
+    @action_sheet ||=
+      begin
+        sheet = UIActionSheet.alloc.initWithTitle(nil,
+                                                  delegate: nil,
+                                                  cancelButtonTitle: nil,
+                                                  destructiveButtonTitle: nil,
+                                                  otherButtonTitles: nil)
+
+        pickerView = UIPickerView.alloc.initWithFrame([[0, 0], [0, 0]])
+        pickerView.showsSelectionIndicator = true
+        pickerView.dataSource = self
+        pickerView.delegate = self
+        pickerView.selectRow(@account.default_blog_index||0,
+                             inComponent: 0,
+                             animated: false)
+        sheet.addSubview(pickerView)
+        sheet
+      end
+    @action_sheet.showInView(view)
+    @action_sheet.setBounds([[0, 0], [320, 415]])
+  end
+
   def numberOfComponentsInPickerView pickerView
     1
   end
@@ -54,6 +146,8 @@ class TbrPostViewController < UIViewController
 
   def pickerView pickerView, didSelectRow: row, inComponent: component
     @account.default_blog_index = row
+    @postBlogLabel.text = @account.blogs[row].title
     App.shared.delegate.tumblr_account = @account
+    @action_sheet.dismissWithClickedButtonIndex(0, animated: true)
   end
 end
