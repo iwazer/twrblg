@@ -5,7 +5,13 @@ class AppDelegate
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     TMAPIClient.sharedInstance.OAuthConsumerKey = 'TM-CONSUMER-KEY'.info_plist
     TMAPIClient.sharedInstance.OAuthConsumerSecret = 'TM-SECRET-KEY'.info_plist
-   true
+
+    account = tumblr_account
+    if account
+      TMAPIClient.sharedInstance.OAuthToken = account.token
+      TMAPIClient.sharedInstance.OAuthTokenSecret = account.token_secret
+    end
+    true
   end
 
   def application application,
@@ -39,6 +45,7 @@ class AppDelegate
   end
 
   TWITTER_ACCOUNT_KEY = "TWITTER-ACCOUNT"
+  TUMBLR_ACCOUNT_KEY = "TUMBLR-ACCOUNT"
 
   def twitter_account= account
     @twitter_account = account
@@ -54,8 +61,15 @@ class AppDelegate
   end
 
   def tumblr_account= account
+    @tumblr_account = account
+    KeyChainStore.setString(TUMBLR_ACCOUNT_KEY, account.pack)
   end
 
   def tumblr_account
+    @tumblr_account =
+      begin
+        s = KeyChainStore.fetch(TUMBLR_ACCOUNT_KEY)
+        TumblrAccount.unpack(s)
+      end
   end
 end

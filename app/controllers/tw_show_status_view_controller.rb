@@ -26,6 +26,15 @@ class TwShowStatusViewController < UIViewController
   end
 
   def on_reblog
-    # TMAPIClient.sharedInstance.
+    self.performSegueWithIdentifier("TumblrPost", sender:self)
+  end
+
+  def prepareForSegue segue, sender:sender
+    controller = segue.destinationViewController
+    case segue.identifier
+    when "TumblrPost"
+      controller.status = @status
+      controller.image = view.subviews.first.image
+    end
   end
 end

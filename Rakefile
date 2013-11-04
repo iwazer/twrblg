@@ -36,6 +36,7 @@ Motion::Project::App.setup do |app|
     pod 'STTwitter'
     pod 'UICKeyChainStore'
     pod 'TMTumblrSDK'
+    pod 'XCDFormInputAccessoryView', '~> 1.0.0'
   end
 
 end

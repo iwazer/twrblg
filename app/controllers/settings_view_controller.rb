@@ -64,10 +64,16 @@ class SettingsViewController < UITableViewController
     callback = -> (error) {
       unless error
         user_info_callback = -> (result,error) {
-          account = TumblrAccount.new(result["user"])
-          App.shared.delegate.tumblr_account = account
-          @data[1][:account] = account
-          self.tableView.reloadData
+          unless error
+            account = TumblrAccount.new(result["user"],
+                                        TMAPIClient.sharedInstance.OAuthToken,
+                                        TMAPIClient.sharedInstance.OAuthTokenSecret)
+            App.shared.delegate.tumblr_account = account
+            @data[1][:account] = account
+            self.tableView.reloadData
+          else
+            App.alert("Tumblr failed: #{error.localizedDescription}")
+          end
         }
         TMAPIClient.sharedInstance.userInfo(user_info_callback)
       else

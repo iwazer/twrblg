@@ -10,30 +10,36 @@ class TumblrBlog
   def pack
     [name, title, primary].join("\2")
   end
-
-  def inspect
-    [name, title, primary].join(" ")
-  end
 end
 
 class TumblrAccount
-  attr_reader :name, :blogs
+  attr_reader :name, :token, :token_secret
+  attr_accessor :default_blog_index
 
-  def initialize arg
-    if arg.is_a?(Hash)
-      @name = arg["name"]
+  def initialize user_info, token, token_secret, default_blog_index=0
+    if user_info.is_a?(Hash)
+      @name = user_info["name"]
+      @token = token
+      @token_secret = token_secret
+      @default_blog_index = default_blog_index
       @blogs = []
-      arg["blogs"].each do |blog|
+      user_info["blogs"].each do |blog|
         @blogs << TumblrBlog.new(blog["name"],blog["title"],blog["primary"])
       end
-    elsif arg.is_a?(String)
-      @name = arg
+    elsif user_info.is_a?(String)
+      @name = user_info
+      @token = token
+      @token_secret = token_secret
+      @default_blog_index = default_blog_index
     end
   end
 
-  def << blog
+  def blogs
     @blogs ||= []
-    @blogs << blog
+  end
+
+  def << blog
+    blogs << blog
   end
 
   def self.unpack s
@@ -41,11 +47,14 @@ class TumblrAccount
       info = s.split("\1")
       if info.select(&:present?).count > 0
         name = info.shift
-        account = TumblrAccount.new(name)
+        token = info.shift
+        token_secret = info.shift
+        default_blog_index = info.shift.to_i
+        account = TumblrAccount.new(name, token, token_secret, default_blog_index)
         info.map do |bs|
           binfo = bs.split("\2")
           if binfo.select(&:present?).count == 3
-            account.blos << TumblrBlog.new(*binfo)
+            account.blogs << TumblrBlog.new(*binfo)
           end
         end
         account
@@ -54,10 +63,6 @@ class TumblrAccount
   end
 
   def pack
-    [name, blogs.map(&:pack)].join("\1")
-  end
-
-  def inspect
-    [name, blogs.map(&:inspect)].join("\1")
+    [name, token, token_secret, default_blog_index, blogs.map(&:pack)].join("\1")
   end
 end
