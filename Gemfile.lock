@@ -38,6 +38,8 @@ GEM
     json (1.8.0)
     motion-cocoapods (1.3.7)
       cocoapods (>= 0.17.0)
+    motion-hpple (0.3.1)
+      motion-cocoapods (>= 1.3.0.rc1)
     multi_json (1.8.0)
     nap (0.5.1)
     open4 (1.3.0)
@@ -57,6 +59,7 @@ DEPENDENCIES
   bubble-wrap (~> 1.3.0)
   ib
   motion-cocoapods
+  motion-hpple
   motion-pixate!
   rake
   sugarcube

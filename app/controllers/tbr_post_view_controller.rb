@@ -2,7 +2,7 @@
 class TbrPostViewController < UIViewController
   extend IB
 
-  attr_writer :status, :image
+  attr_writer :status
 
   outlet :postTextView, UITextView
   outlet :postImageView, UIImageView
@@ -11,7 +11,7 @@ class TbrPostViewController < UIViewController
   def viewDidLoad
     @inputAccessoryView = XCDFormInputAccessoryView.new
     navigationItem.setRightBarButtonItem(nil, animated:true)
-    postImageView.image = @image
+    postImageView.image = @status["_image"]
     @account = App.shared.delegate.tumblr_account
     @postBlogLabel.text = @account.blog.try(:name)
     self.postTextView.text = @status["text"]
@@ -82,10 +82,10 @@ class TbrPostViewController < UIViewController
   end
 
   def reblog sender
-    media = @status["entities"]["media"].first
-    source = "#{media["media_url"]}:large"
+    link = @status["_link"]
+    source = @status["_image_url"]
     parameters = {"caption" => self.postTextView.text,
-      "link" => media["expanded_url"],
+      "link" => link,
       "source" => source
     }
     callback = -> (resp,error) {

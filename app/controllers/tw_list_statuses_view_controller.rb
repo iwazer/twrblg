@@ -5,7 +5,8 @@ class TwListStatusesViewController < UITableViewController
 
   def viewDidLoad
     self.title = @list["description"].blank_then_nil || @list["name"]
-
+    @data = []
+    @count = 5
     fetch_statuses
   end
 
@@ -14,12 +15,12 @@ class TwListStatusesViewController < UITableViewController
     if account
       twitter = App.shared.delegate.twitter
       successBlock = lambda {|statuses|
-        @data = statuses.select{|status| media_photo?(status)}
+        @data += fetch_images(statuses)
         self.tableView.reloadData
       }
       twitter.getListsStatusesForListID(@list["id_str"],
                                         sinceID: @since_id,
-                                        maxID: nil,
+                                        maxID: @max_id,
                                         count: @count,
                                         includeEntities: nil,
                                         includeRetweets: 0,
@@ -41,7 +42,7 @@ class TwListStatusesViewController < UITableViewController
   end
 
   def tableView tableView, numberOfRowsInSection: section
-    @data.count
+    @data.count + 1
   end
 
   def tableView tableView, cellForRowAtIndexPath: indexPath
@@ -53,28 +54,87 @@ class TwListStatusesViewController < UITableViewController
       cell.textLabel.minimumScaleFactor = 10.0/15
       cell.textLabel.adjustsFontSizeToFitWidth = true
     end
-    status = @data[indexPath.row]
-    if status["user"] && status["user"]["profile_image_url"].present?
-      url = status["user"]["profile_image_url"]
-      image = UIImage.imageWithData(NSData.dataWithContentsOfURL(NSURL.URLWithString(url)))
-      cell.imageView.image = image
+    if indexPath.row < @data.count
+      status = @data[indexPath.row]
+      if status["user"] && status["user"]["profile_image_url"].present?
+        url = status["user"]["profile_image_url"]
+        image = UIImage.imageWithData(NSData.dataWithContentsOfURL(NSURL.URLWithString(url)))
+        cell.imageView.image = image
+      end
+      cell.detailTextLabel.text = status["text"]
+    else
+      cell.detailTextLabel.text = "Older"
     end
-    cell.detailTextLabel.text = status["text"]
     cell
   end
 
   def tableView tableView, didSelectRowAtIndexPath:indexPath
-    @status = @data[indexPath.row]
-    self.performSegueWithIdentifier("TbrPostView", sender:self)
+    if indexPath.row < @data.count
+      @status = @data[indexPath.row]
+      if @status["_image_url"]
+        self.performSegueWithIdentifier("TbrPostView", sender:self)
+      else
+        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+      end
+    else
+      @since_id = nil
+      @max_id = @data[-1]["id"].to_i - 1
+      fetch_statuses
+    end
+  end
+
+  def fetch_images statuses
+    data = statuses.map{|s| s.mutableCopy}
+    data.each do |status|
+      unless status["_image_url"]
+        candidate_image_url(status)
+      end
+    end
+    data
   end
 
   def prepareForSegue segue, sender:sender
     if segue.identifier == "TbrPostView"
-      controller = segue.destinationViewController
-      controller.status = @status
-      url = @status["entities"]["media"].first["media_url"]
-      url = NSURL.URLWithString url if url.is_a?(String)
-      controller.image = UIImage.imageWithData(NSData.dataWithContentsOfURL(url))
+      if @status["_image_url"]
+        controller = segue.destinationViewController
+        controller.status = @status
+      end
     end
+  end
+
+  def candidate_image_url status
+    entities = status["entities"]
+    if entities["media"]
+      status["_image_url"] = entities["media"].first["media_url"]
+      status["_image"] = status["_image_url"].to_s.nsurl.fetch_image
+      status["_link"] = status["entities"]["media"].first["expanded_url"]
+    elsif entities["urls"].try(:count) > 0
+      main_image_url(status)
+    end
+  end
+
+  def main_image_url status
+    url = status["entities"]["urls"].first["expanded_url"]
+    case url
+    when %r{twitpic.com/}
+      find_image_url_from_twitpic(status, url.concat("/full").gsub("//", "/"))
+    end
+    tableView.reloadData
+  end
+
+  def find_image_url_from_twitpic status, url
+    BW::HTTP.get(url) do |response|
+      parser = Hpple.HTML(response.body.to_s)
+      meta = parser.xpath('//meta[@name="twitter:image"]').first
+      if meta['value']
+        set_status(status, meta['value'], url)
+      end
+    end
+  end
+
+  def set_status status, img_url, src_url
+    status["_image_url"] = img_url
+    status["_image"] = status["_image_url"].to_s.nsurl.fetch_image
+    status["_link"] = src_url
   end
 end
