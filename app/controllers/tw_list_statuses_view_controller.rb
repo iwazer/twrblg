@@ -31,12 +31,6 @@ class TwListStatusesViewController < UITableViewController
     end
   end
 
-  def media_photo? status
-    status["entities"] &&
-      !status["entities"]["media"].empty? &&
-      status["entities"]["media"].first["type"] == "photo"
-  end
-
   def numberOfSectionsInTableView tableView
     1
   end
@@ -58,8 +52,13 @@ class TwListStatusesViewController < UITableViewController
       status = @data[indexPath.row]
       if status["user"] && status["user"]["profile_image_url"].present?
         url = status["user"]["profile_image_url"]
-        image = UIImage.imageWithData(NSData.dataWithContentsOfURL(NSURL.URLWithString(url)))
+        image = url.nsurl.fetch_image
         cell.imageView.image = image
+      end
+      if status["_image_url"]
+        cell.styleClass = "exist-image-cell"
+      else
+        cell.styleClass = "no-image-cell"
       end
       cell.detailTextLabel.text = status["text"]
     else
@@ -122,6 +121,14 @@ class TwListStatusesViewController < UITableViewController
     when %r{twicolle.com/}
       find_image_url(status, url, '//img[@itemprop="image"]', 'src')
     end
+    NSTimer.scheduledTimerWithTimeInterval(0.5,
+                                           target: self,
+                                           selector: "refresh",
+                                           userInfo: nil,
+                                           repeats: false)
+  end
+
+  def refresh
     tableView.reloadData
   end
 
@@ -129,7 +136,7 @@ class TwListStatusesViewController < UITableViewController
     BW::HTTP.get(url) do |response|
       parser = Hpple.HTML(response.body.to_s)
       meta = parser.xpath(xpath).first
-      if meta[attr]
+      if meta && meta[attr]
         set_status(status, meta[attr], url)
       end
     end
