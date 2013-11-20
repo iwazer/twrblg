@@ -117,17 +117,20 @@ class TwListStatusesViewController < UITableViewController
     url = status["entities"]["urls"].first["expanded_url"]
     case url
     when %r{twitpic.com/}
-      find_image_url_from_twitpic(status, url.concat("/full").gsub("//", "/"))
+      find_image_url(status, url.concat("/full").gsub("//", "/"),
+                     '//meta[@name="twitter:image"]', 'value')
+    when %r{twicolle.com/}
+      find_image_url(status, url, '//img[@itemprop="image"]', 'src')
     end
     tableView.reloadData
   end
 
-  def find_image_url_from_twitpic status, url
+  def find_image_url status, url, xpath, attr
     BW::HTTP.get(url) do |response|
       parser = Hpple.HTML(response.body.to_s)
-      meta = parser.xpath('//meta[@name="twitter:image"]').first
-      if meta['value']
-        set_status(status, meta['value'], url)
+      meta = parser.xpath(xpath).first
+      if meta[attr]
+        set_status(status, meta[attr], url)
       end
     end
   end
