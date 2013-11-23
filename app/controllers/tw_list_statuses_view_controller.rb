@@ -133,6 +133,10 @@ class TwListStatusesViewController < UITableViewController
         find_image_url(status, url, '//img[@itemprop="image"]', 'src')
         no_image = false
         break
+      when %r{inupple.com/}
+        find_image_url(status, url, '//meta[@name="twitter:image:src"]', 'content')
+        no_image = false
+        break
       end
     end
     status["_processed"] = true if no_image
