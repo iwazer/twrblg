@@ -154,11 +154,6 @@
                                     <outletCollection property="gestureRecognizers" destination="z4b-NU-D1D" appends="YES" id="P0C-Fn-whj"/>
                                 </connections>
                             </label>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6T1-ZV-7T2">
-                                <rect key="frame" x="5" y="35" width="310" height="200"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                            </imageView>
                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Pfg-mw-Emr">
                                 <rect key="frame" x="10" y="240" width="300" height="210"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
@@ -169,6 +164,14 @@
                                     <userDefinedRuntimeAttribute type="string" keyPath="styleId" value="tumblrComment"/>
                                 </userDefinedRuntimeAttributes>
                             </textView>
+                            <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="6T1-ZV-7T2">
+                                <rect key="frame" x="5" y="35" width="310" height="200"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                <connections>
+                                    <outletCollection property="gestureRecognizers" destination="EbY-5R-LSc" appends="YES" id="hnA-s6-kAE"/>
+                                </connections>
+                            </imageView>
                         </subviews>
                     </scrollView>
                     <toolbarItems>
@@ -191,6 +194,12 @@
                     <connections>
                         <action selector="blog_label_tapped" destination="bcE-sK-ag2" id="MTh-Gg-rqr"/>
                         <outlet property="delegate" destination="bcE-sK-ag2" id="qne-fU-l2c"/>
+                    </connections>
+                </tapGestureRecognizer>
+                <tapGestureRecognizer id="EbY-5R-LSc">
+                    <connections>
+                        <action selector="image_tapped" destination="bcE-sK-ag2" id="CGs-Z8-mPw"/>
+                        <outlet property="delegate" destination="bcE-sK-ag2" id="whD-I2-Enc"/>
                     </connections>
                 </tapGestureRecognizer>
             </objects>

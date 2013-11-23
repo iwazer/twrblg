@@ -129,6 +129,29 @@ class TbrPostViewController < UIViewController
     @action_sheet.setBounds([[0, 0], [320, 415]])
   end
 
+  def image_tapped
+    if @orig_image_frame
+      UIView.animateWithDuration(0.2, animations: -> {
+                                   @postImageView.frame = @orig_image_frame
+                                   @orig_image_frame = nil
+                                   postTextView.hidden = false
+                                   postBlogLabel.hidden = false
+                                   navigationController.navigationBarHidden = false
+                                   navigationController.toolbarHidden = false
+                                 })
+    else
+      postTextView.hidden = true
+      postBlogLabel.hidden = true
+      navigationController.navigationBarHidden = true
+      navigationController.toolbarHidden = true
+      @orig_image_frame = @postImageView.frame
+      @postImageView.frame = [[160,240], [0,0]]
+      UIView.animateWithDuration(0.2, animations: -> {
+                                   @postImageView.frame = UIScreen.mainScreen.bounds
+                                 })
+    end
+  end
+
   def numberOfComponentsInPickerView pickerView
     1
   end
