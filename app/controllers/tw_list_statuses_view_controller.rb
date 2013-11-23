@@ -62,6 +62,8 @@ class TwListStatusesViewController < UITableViewController
       cell.detailTextLabel.text = status["text"]
     else
       cell.detailTextLabel.text = "Older"
+      cell.imageView.image = nil
+      cell.styleClass = "exist-image-cell"
     end
     cell
   end
@@ -118,16 +120,22 @@ class TwListStatusesViewController < UITableViewController
   end
 
   def main_image_url status
-    url = status["entities"]["urls"].first["expanded_url"]
-    case url
-    when %r{twitpic.com/}
-      find_image_url(status, url.concat("/full").gsub("//", "/"),
-                     '//meta[@name="twitter:image"]', 'value')
-    when %r{twicolle.com/}
-      find_image_url(status, url, '//img[@itemprop="image"]', 'src')
-    else
-      status["_processed"] = true
+    no_image = true
+    status["entities"]["urls"].each do |h|
+      url = h["expanded_url"]
+      case url
+      when %r{twitpic.com/}
+        find_image_url(status, url.concat("/full").gsub("//", "/"),
+                       '//meta[@name="twitter:image"]', 'value')
+        no_image = false
+        break
+      when %r{twicolle.com/}
+        find_image_url(status, url, '//img[@itemprop="image"]', 'src')
+        no_image = false
+        break
+      end
     end
+    status["_processed"] = true if no_image
   end
 
   def refresh timer
