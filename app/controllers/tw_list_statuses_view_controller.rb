@@ -16,7 +16,6 @@ class TwListStatusesViewController < UITableViewController
       twitter = App.shared.delegate.twitter
       successBlock = lambda {|statuses|
         @data += fetch_images(statuses)
-        self.tableView.reloadData
       }
       twitter.getListsStatusesForListID(@list["id_str"],
                                         sinceID: @since_id,
@@ -89,6 +88,11 @@ class TwListStatusesViewController < UITableViewController
         candidate_image_url(status)
       end
     end
+    NSTimer.scheduledTimerWithTimeInterval(0.5,
+                                           target: self,
+                                           selector: "refresh:",
+                                           userInfo: nil,
+                                           repeats: true)
     data
   end
 
@@ -104,11 +108,12 @@ class TwListStatusesViewController < UITableViewController
   def candidate_image_url status
     entities = status["entities"]
     if entities["media"]
-      status["_image_url"] = entities["media"].first["media_url"]
-      status["_image"] = status["_image_url"].to_s.nsurl.fetch_image
-      status["_link"] = status["entities"]["media"].first["expanded_url"]
+      set_status(status, entities["media"].first["media_url"],
+                 status["entities"]["media"].first["expanded_url"])
     elsif entities["urls"].try(:count) > 0
       main_image_url(status)
+    else
+      status["_processed"] = true
     end
   end
 
@@ -120,25 +125,35 @@ class TwListStatusesViewController < UITableViewController
                      '//meta[@name="twitter:image"]', 'value')
     when %r{twicolle.com/}
       find_image_url(status, url, '//img[@itemprop="image"]', 'src')
+    else
+      status["_processed"] = true
     end
-    NSTimer.scheduledTimerWithTimeInterval(0.5,
-                                           target: self,
-                                           selector: "refresh",
-                                           userInfo: nil,
-                                           repeats: false)
   end
 
-  def refresh
-    tableView.reloadData
+  def refresh timer
+    puts 'refresh:'
+    if @data.select{|status| status["_processed"].nil?}.count == 0
+      puts 'refreshing!'
+      tableView.reloadData
+      timer.invalidate
+    end
   end
 
   def find_image_url status, url, xpath, attr
-    BW::HTTP.get(url) do |response|
-      parser = Hpple.HTML(response.body.to_s)
-      meta = parser.xpath(xpath).first
-      if meta && meta[attr]
-        set_status(status, meta[attr], url)
+    begin
+      puts "access to #{url}"
+      BW::HTTP.get(url) do |response|
+        parser = Hpple.HTML(response.body.to_s)
+        meta = parser.xpath(xpath).first
+        if meta && meta[attr]
+          set_status(status, meta[attr], url)
+        else
+          status["_processed"] = true
+        end
       end
+    rescue Exception => e
+      NSLog(e.message)
+      status["_processed"] = true
     end
   end
 
@@ -146,5 +161,6 @@ class TwListStatusesViewController < UITableViewController
     status["_image_url"] = img_url
     status["_image"] = status["_image_url"].to_s.nsurl.fetch_image
     status["_link"] = src_url
+    status["_processed"] = true
   end
 end

@@ -13,6 +13,8 @@ class AppDelegate
       TMAPIClient.sharedInstance.OAuthToken = account.token
       TMAPIClient.sharedInstance.OAuthTokenSecret = account.token_secret
     end
+
+    NanoStore.shared_store = NanoStore.store(:file, "twrblg01.db".document)
     true
   end
 
