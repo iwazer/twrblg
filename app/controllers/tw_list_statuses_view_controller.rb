@@ -143,9 +143,7 @@ class TwListStatusesViewController < UITableViewController
   end
 
   def refresh timer
-    puts 'refresh:'
     if @data.select{|status| status["_processed"].nil?}.count == 0
-      puts 'refreshing!'
       tableView.reloadData
       timer.invalidate
     end
@@ -153,7 +151,7 @@ class TwListStatusesViewController < UITableViewController
 
   def find_image_url status, url, xpath, attr
     begin
-      puts "access to #{url}"
+      NSLog("access to #{url}")
       BW::HTTP.get(url) do |response|
         parser = Hpple.HTML(response.body.to_s)
         meta = parser.xpath(xpath).first
