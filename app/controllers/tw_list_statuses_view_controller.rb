@@ -3,31 +3,48 @@ class TwListStatusesViewController < UITableViewController
 
   attr_writer :list
 
+  FETCH_COUNT = 5
+
   def viewDidLoad
     self.title = @list["description"].blank_then_nil || @list["name"]
     @data = []
     @count = 5
-    fetch_statuses
-  end
-
-  def fetch_statuses
+    @list_id = @list["id"]
+    NSLog("Show list #{@list_id} statuses")
+    setup_spinner(view)
     account = App.shared.delegate.twitter_account
     if account
-      twitter = App.shared.delegate.twitter
-      successBlock = lambda {|statuses|
-        @data += fetch_images(statuses)
-      }
-      twitter.getListsStatusesForListID(@list["id_str"],
-                                        sinceID: @since_id,
-                                        maxID: @max_id,
-                                        count: @count,
-                                        includeEntities: nil,
-                                        includeRetweets: 0,
-                                        successBlock: successBlock,
-                                        errorBlock: lambda {|error|
-                                          App.alert(error.localizedDescription.to_s)
-                                        })
+      load_statuses
     end
+  end
+
+  def load_statuses
+    completed = -> (statuses) {
+      @data = statuses.map(&:status)
+      refresh nil
+      fetch_statuses(:top)
+    }
+    start_activity_indicator
+    TwitterStatus.load_statuses(@list_id, completed)
+    
+  end
+
+  def fetch_statuses gap=:bottom
+    success = -> (statuses) {
+      fetch_images(statuses, gap)
+    }
+    start_activity_indicator
+    twitter = App.shared.delegate.twitter
+    twitter.getListsStatusesForListID(@list_id,
+                                      sinceID: @since_id,
+                                      maxID: @max_id,
+                                      count: FETCH_COUNT,
+                                      includeEntities: nil,
+                                      includeRetweets: 0,
+                                      successBlock: success,
+                                      errorBlock: -> (error) {
+                                        App.alert(error.localizedDescription.to_s)
+                                      })
   end
 
   def numberOfSectionsInTableView tableView
@@ -49,17 +66,23 @@ class TwListStatusesViewController < UITableViewController
     end
     if indexPath.row < @data.count
       status = @data[indexPath.row]
-      if status["user"] && status["user"]["profile_image_url"].present?
-        url = status["user"]["profile_image_url"]
-        image = url.nsurl.fetch_image
-        cell.imageView.image = image
-      end
-      if status["_image_url"]
+      if status[:gap]
+        cell.detailTextLabel.text = "fetch for non-acquisition..."
+        cell.imageView.image = nil
         cell.styleClass = "exist-image-cell"
       else
-        cell.styleClass = "no-image-cell"
+        if status["user"] && status["user"]["profile_image_url"].present?
+          url = status["user"]["profile_image_url"]
+          image = url.nsurl.fetch_image
+          cell.imageView.image = image
+        end
+        if status["_image_url"]
+          cell.styleClass = "exist-image-cell"
+        else
+          cell.styleClass = "no-image-cell"
+        end
+        cell.detailTextLabel.text = status["text"]
       end
-      cell.detailTextLabel.text = status["text"]
     else
       cell.detailTextLabel.text = "Older"
       cell.imageView.image = nil
@@ -71,7 +94,10 @@ class TwListStatusesViewController < UITableViewController
   def tableView tableView, didSelectRowAtIndexPath:indexPath
     if indexPath.row < @data.count
       @status = @data[indexPath.row]
-      if @status["_image_url"]
+      if @status[:gap] && indexPath.row > 0
+        @max_id = @status[indexPath.row-1]["id"].to_i - 1
+        fetch_statuses(:gap)
+      elsif @status["_image_url"]
         self.performSegueWithIdentifier("TbrPostView", sender:self)
       else
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
@@ -83,19 +109,48 @@ class TwListStatusesViewController < UITableViewController
     end
   end
 
-  def fetch_images statuses
+  def fetch_images statuses, gap
     data = statuses.map{|s| s.mutableCopy}
+    overlap = []
     data.each do |status|
-      unless status["_image_url"]
-        candidate_image_url(status)
+      case gap
+      when :top, :gap
+        if @data.reject{|st| st["id"]==status["id"]}.empty?
+          candidate_image_url(status)
+        else
+          overlap << status
+        end
+      else
+        unless status["_image_url"]
+          candidate_image_url(status)
+        end
       end
     end
-    NSTimer.scheduledTimerWithTimeInterval(0.5,
+    data -= overlap
+    if overlap.empty? && !data.empty? && !@data.empty? && data.last["status_id"].to_i > @data.first["status_id"].to_i
+      data << {gap: true, "_processed" => true, "_stored" => true}
+    end
+    unless data.empty?
+      case gap
+      when :top
+        @data = data + @data
+      when :gap
+        insert_index = nil
+        @data.each_with_index.each do |status, i|
+          insert_index = i if status["id"].to_i < data.first["id"].to_i
+        end
+        if insert_index
+          @data.insert(i, data)
+        end
+      else
+        @data += data
+      end
+    end
+    NSTimer.scheduledTimerWithTimeInterval(1,
                                            target: self,
                                            selector: "refresh:",
                                            userInfo: nil,
                                            repeats: true)
-    data
   end
 
   def prepareForSegue segue, sender:sender
@@ -143,9 +198,14 @@ class TwListStatusesViewController < UITableViewController
   end
 
   def refresh timer
+    puts "refresh"
     if @data.select{|status| status["_processed"].nil?}.count == 0
+      timer.invalidate if timer
       tableView.reloadData
-      timer.invalidate
+      for_store = @data.reject{|status| status["_stored"]}
+      TwitterStatus.store_statuses(@list_id, for_store)
+      for_store.each {|status| status["_stored"] = true}
+      stop_activity_indicator
     end
   end
 
@@ -169,8 +229,9 @@ class TwListStatusesViewController < UITableViewController
 
   def set_status status, img_url, src_url
     status["_image_url"] = img_url
-    status["_image"] = status["_image_url"].to_s.nsurl.fetch_image
     status["_link"] = src_url
     status["_processed"] = true
   end
+
+  include Spinner
 end

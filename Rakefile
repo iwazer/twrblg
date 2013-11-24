@@ -13,7 +13,7 @@ Motion::Project::App.setup do |app|
   app.name = 'twrblg'
   app.info_plist['UIMainStoryboardFile'] = 'Storyboard'
 
-  app.frameworks += ["Accounts","Twitter","Social","CoreText","QuartzCore"]
+  app.frameworks += ["Accounts","Twitter","Social","CoreText","QuartzCore","CoreData"]
 
   app.codesign_certificate = ENV['CODESIGN_CERTIFICATE'] if ENV['CODESIGN_CERTIFICATE']
   app.provisioning_profile = ENV['PROVISIONING_PROFILE'] if ENV['PROVISIONING_PROFILE']
