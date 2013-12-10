@@ -16,6 +16,13 @@ class TwListStatusesViewController < UITableViewController
     if account
       load_statuses
     end
+
+    refresh_control = UIRefreshControl.alloc.init
+    refresh_control.attributedTitle = NSAttributedString.alloc.initWithString("pull to Refresh")
+    refresh_control.addTarget(self,
+                              action: "refresh_table_view",
+                              forControlEvents: UIControlEventValueChanged)
+    self.refreshControl = refresh_control
   end
 
   def load_statuses
@@ -205,6 +212,8 @@ class TwListStatusesViewController < UITableViewController
       for_store = @data.reject{|status| status["_stored"]}
       TwitterStatus.store_statuses(@list_id, for_store)
       for_store.each {|status| status["_stored"] = true}
+      @end_refreshing.try(:call)
+      @end_refreshing = nil
       stop_activity_indicator
     end
   end
@@ -231,6 +240,17 @@ class TwListStatusesViewController < UITableViewController
     status["_image_url"] = img_url
     status["_link"] = src_url
     status["_processed"] = true
+  end
+
+  def refresh_table_view
+    refreshControl.attributedTitle =
+      NSAttributedString.alloc.initWithString("Refreshing the TableView")
+    @end_refreshing = -> {
+      lastupdated = Time.now.strftime("Last Updated on %Y/%m/%d %H:%M:%S")
+      refreshControl.attributedTitle = NSAttributedString.alloc.initWithString(lastupdated)
+      refreshControl.endRefreshing
+    }
+    fetch_statuses(:top)
   end
 
   include Spinner
