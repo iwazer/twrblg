@@ -21,8 +21,14 @@ class TwitterStatus < NanoStore::Model
 
     def store_statuses list_id, statuses
       statuses.each do |status|
-        create(list_id: list_id.to_i, status_id: status["id"].to_i,
-               status: status.merge("_stored" => true))
+        for_upd = find({status_id: status["id".to_i]}).first
+        if for_upd
+          for_upd["status"] = status
+          for_upd.save
+        else
+          create(list_id: list_id.to_i, status_id: status["id"].to_i,
+                 status: status.merge("_stored" => true))
+        end
       end
     end
   end
