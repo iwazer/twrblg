@@ -196,7 +196,7 @@ class TwListStatusesViewController < UITableViewController
     status.original["entities"]["urls"].each do |h|
       url = h["expanded_url"]
       case url
-      when %r{twitpic.com/}, %r{http://imgur.com/}
+      when %r{twitpic.com/}
         find_image_url(status, url.concat("/full").gsub("//", "/"),
                        '//meta[@name="twitter:image"]', 'value')
         no_image = false
@@ -207,6 +207,11 @@ class TwListStatusesViewController < UITableViewController
         break
       when %r{inupple.com/}
         find_image_url(status, url, '//meta[@name="twitter:image:src"]', 'content')
+        no_image = false
+        break
+      when %r{imgur.com/}
+        url = url[0..-5] if url[-4..-1] == ".jpg"
+        set_status(status, "#{url}.jpg", url)
         no_image = false
         break
       end
