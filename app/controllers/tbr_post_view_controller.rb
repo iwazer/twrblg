@@ -14,7 +14,7 @@ class TbrPostViewController < UIViewController
     setup_spinner(@postImageView)
     Dispatch::Queue.concurrent.async {
       start_activity_indicator
-      image = @status["_image_url"].nsurl.fetch_image
+      image = @status.image_url.nsurl.fetch_image
       Dispatch::Queue.main.async {
         postImageView.image = image
         stop_activity_indicator
@@ -22,7 +22,7 @@ class TbrPostViewController < UIViewController
     }
     @account = App.shared.delegate.tumblr_account
     @postBlogLabel.text = @account.blog.try(:name)
-    self.postTextView.text = @status["text"]
+    self.postTextView.text = @status.text
   end
 
   def viewWillAppear animated
@@ -90,8 +90,8 @@ class TbrPostViewController < UIViewController
   end
 
   def reblog sender
-    link = @status["_link"]
-    source = @status["_image_url"]
+    link = @status.link
+    source = @status.image_url
     parameters = {"caption" => self.postTextView.text,
       "link" => link,
       "source" => source

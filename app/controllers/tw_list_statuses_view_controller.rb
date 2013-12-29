@@ -7,9 +7,9 @@ class TwListStatusesViewController < UITableViewController
 
   def viewDidLoad
     self.title = @list["description"].blank_then_nil || @list["name"]
-    @data = []
+    @data = Struct.new(:rows, :gap_id).new([])
     @count = 5
-    @list_id = @list["id"]
+    @list_id = @list["id"].to_i
     NSLog("Show list #{@list_id} statuses")
     setup_spinner(view)
     account = App.shared.delegate.twitter_account
@@ -27,14 +27,8 @@ class TwListStatusesViewController < UITableViewController
 
   def load_statuses
     completed = -> (statuses) {
-      data = statuses.map(&:status)
-      @data = []
-      data.each do |status|
-        @data << status
-        @data << {gap: true, "_processed" => true, "_stored" => true} unless status["_prev_id"]
-      end
-      @data.pop if @data.last.try(:[], :gap)
-      refresh nil
+      @data.rows = statuses
+      refresh(nil)
       fetch_statuses(:top)
     }
     start_activity_indicator
@@ -44,8 +38,7 @@ class TwListStatusesViewController < UITableViewController
 
   def fetch_statuses gap=:bottom
     success = -> (statuses) {
-      data = statuses.map{|s| s.mutableCopy}
-      store_prev_id(data)
+      data = statuses.map{|status| TwitterStatus.from_api(@list_id, status)}
       fetch_images(data, gap)
     }
     start_activity_indicator
@@ -67,7 +60,7 @@ class TwListStatusesViewController < UITableViewController
   end
 
   def tableView tableView, numberOfRowsInSection: section
-    @data.count + 1
+    @data.rows.count + 1
   end
 
   def tableView tableView, cellForRowAtIndexPath: indexPath
@@ -82,30 +75,25 @@ class TwListStatusesViewController < UITableViewController
       cell.detailTextLabel.adjustsFontSizeToFitWidth = true
     end
     cell_clear(cell)
-    if indexPath.row < @data.count
-      status = @data[indexPath.row]
-      if status[:gap]
-        cell.detailTextLabel.text = "fetch for non-acquisition..."
+    if indexPath.row < @data.rows.count
+      status = @data.rows[indexPath.row]
+      if status.profile_image_url
+        image = status.profile_image_url.nsurl.fetch_image
+        cell.imageView.image = image
+      end
+      if status.image_url
         cell.styleClass = "exist-image-cell"
       else
-        if status["user"] && status["user"]["profile_image_url"].present?
-          url = status["user"]["profile_image_url"]
-          image = url.nsurl.fetch_image
-          cell.imageView.image = image
-        end
-        if status["_image_url"]
-          cell.styleClass = "exist-image-cell"
-        else
-          cell.styleClass = "no-image-cell"
-        end
-        cell.textLabel.text = status["text"]
-        info = "#{parse_dt(status["created_at"]).strftime("%Y/%m/%d %H:%M:%S")} #{status["id"]}"
-        cell.detailTextLabel.text = info
+        cell.styleClass = "no-image-cell"
       end
+      cell.textLabel.text = status.text
+      info = unless status.gap?
+               "#{status.created_at.try(:strftime, "%Y/%m/%d %H:%M:%S")} #{status.id}"
+             end
+      cell.detailTextLabel.text = info
     else
       cell.detailTextLabel.text = "Older"
       cell.imageView.image = nil
-      cell.styleClass = "exist-image-cell"
     end
     cell
   end
@@ -114,73 +102,67 @@ class TwListStatusesViewController < UITableViewController
     cell.detailTextLabel.text = nil
     cell.textLabel.text = nil
     cell.imageView.image = nil
-    cell.styleClass = nil
+    cell.styleClass = "exist-image-cell"
   end
 
   def tableView tableView, didSelectRowAtIndexPath:indexPath
-    if indexPath.row < @data.count
-      @status = @data[indexPath.row]
-      if @status[:gap] && indexPath.row > 0
-        @max_id = @data[indexPath.row-1]["id"].to_i - 1
+    if indexPath.row < @data.rows.count
+      @status = @data.rows[indexPath.row]
+      if @status.gap? && indexPath.row > 0
+        @max_id = @status.below_me_max
+        @since_id = @data.gap_id = @data.rows[indexPath.row + 1].status_id
+        @data.rows.delete_at(indexPath.row)
+        @status.delete
         fetch_statuses(:gap)
-      elsif @status["_image_url"]
+      elsif @status.image_url
         self.performSegueWithIdentifier("TbrPostView", sender:self)
       else
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
       end
     else
       @since_id = nil
-      @max_id = @data[-1]["id"].to_i - 1
+      @max_id = @data.rows[-1].status_id - 1
       fetch_statuses
     end
   end
 
   def fetch_images data, gap
-    overlap = []
+    overlap_new = []
+    overlap_pre = []
     data.each do |status|
-      if @data.find{|st| st["id"]==status["id"]}
-        overlap << status
+      if @data.rows.find{|st| st.status_id==status.status_id}
+        if @data.gap_id && @data.gap_id > st.id
+          overlap_new << status
+        else
+          overlap_pre << status
+        end
       else
         candidate_image_url(status)
       end
     end
-    data -= overlap
-    if overlap.empty?
-      data << {gap: true, "_processed" => true, "_stored" => true}
+    data -= (overlap_new + overlap_pre)
+    if gap != :bottom && overlap_pre.empty? && !data.empty? && !@data.rows.empty?
+      data << TwitterStatus.create_gap(@list_id, data[-1].status_id)
     end
     unless data.empty?
-      last = first = nil
       case gap
       when :top
-        last = data.last
-        first = @data.first
-        @data = data + @data
+        @data.rows = data + @data.rows
       when :gap
         insert_index = nil
-        @data.each_with_index.each do |status, i|
-          if status["id"].to_i > data.first["id"].to_i
+        @data.rows.each_with_index.each do |status, i|
+          if status.id < data.first.id
             insert_index = i
-          else
             break
           end
         end
         if insert_index
-          last = @data[insert_index]
-          first = data.first
-          @data.insert(insert_index, data).flatten!
-          @data.delete_at(insert_index+1)
+          @data.rows.insert(insert_index, data).flatten!
         end
       else
-        last = @data.last
-        first = data.first
-        @data += data
-      end
-      if last && first
-        last["_prev_id"] = first["id"]
-        last["_stored"] = nil
+        @data.rows += data
       end
     end
-    @data.pop if @data.last.try(:[], :gap)
     NSTimer.scheduledTimerWithTimeInterval(1,
                                            target: self,
                                            selector: "refresh:",
@@ -188,17 +170,9 @@ class TwListStatusesViewController < UITableViewController
                                            repeats: true)
   end
 
-  def store_prev_id statuses
-    next_stt = nil
-    statuses.each do |status|
-      next_stt["_prev_id"] = status["id"] if next_stt
-      next_stt = status
-    end
-  end
-
   def prepareForSegue segue, sender:sender
     if segue.identifier == "TbrPostView"
-      if @status["_image_url"]
+      if @status.image_url
         controller = segue.destinationViewController
         controller.status = @status
       end
@@ -206,20 +180,20 @@ class TwListStatusesViewController < UITableViewController
   end
 
   def candidate_image_url status
-    entities = status["entities"]
+    entities = status.original["entities"]
     if entities["media"]
       set_status(status, entities["media"].first["media_url"],
-                 status["entities"]["media"].first["expanded_url"])
+                 entities["media"].first["expanded_url"])
     elsif entities["urls"].try(:count) > 0
       main_image_url(status)
     else
-      status["_processed"] = true
+      status.done
     end
   end
 
   def main_image_url status
     no_image = true
-    status["entities"]["urls"].each do |h|
+    status.original["entities"]["urls"].each do |h|
       url = h["expanded_url"]
       case url
       when %r{twitpic.com/}, %r{http://imgur.com/}
@@ -237,44 +211,43 @@ class TwListStatusesViewController < UITableViewController
         break
       end
     end
-    status["_processed"] = true if no_image
+    status.done if no_image
   end
 
   def refresh timer
-    if @data.select{|status| status["_processed"].nil?}.count == 0
-      timer.invalidate if timer
-      tableView.reloadData
-      for_store = @data.reject{|status| status["_stored"]}
-      TwitterStatus.store_statuses(@list_id, for_store)
-      for_store.each {|status| status["_stored"] = true}
-      @end_refreshing.try(:call)
-      @end_refreshing = nil
-      stop_activity_indicator
+    if @data.rows.reject{|status| status.processed}.count == 0
+      if timer
+        timer.invalidate
+        @end_refreshing.try(:call)
+        @end_refreshing = nil
+        tableView.reloadData
+        stop_activity_indicator
+      end
     end
   end
 
   def find_image_url status, url, xpath, attr
-    begin
-      NSLog("access to #{url}")
-      BW::HTTP.get(url) do |response|
+    NSLog("access to #{url}")
+    BW::HTTP.get(url) do |response|
+      begin
         parser = Hpple.HTML(response.body.to_s)
         meta = parser.xpath(xpath).first
         if meta && meta[attr]
           set_status(status, meta[attr], url)
         else
-          status["_processed"] = true
+          status.done
         end
+      rescue Exception => e
+        NSLog(e.message)
+        status.done
       end
-    rescue Exception => e
-      NSLog(e.message)
-      status["_processed"] = true
     end
   end
 
   def set_status status, img_url, src_url
-    status["_image_url"] = img_url
-    status["_link"] = src_url
-    status["_processed"] = true
+    status.image_url = img_url
+    status.link = src_url
+    status.done
   end
 
   def refresh_table_view
