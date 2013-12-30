@@ -192,28 +192,30 @@ class TwListStatusesViewController < UITableViewController
   end
 
   def main_image_url status
-    no_image = true
+    no_image = false
     status.original["entities"]["urls"].each do |h|
       url = h["expanded_url"]
       case url
       when %r{twitpic.com/}
         find_image_url(status, url.concat("/full").gsub("//", "/"),
                        '//meta[@name="twitter:image"]', 'value')
-        no_image = false
         break
       when %r{twicolle.com/}
         find_image_url(status, url, '//img[@itemprop="image"]', 'src')
-        no_image = false
         break
       when %r{inupple.com/}
         find_image_url(status, url, '//meta[@name="twitter:image:src"]', 'content')
-        no_image = false
         break
       when %r{imgur.com/}
         url = url[0..-5] if url[-4..-1] == ".jpg"
         set_status(status, "#{url}.jpg", url)
-        no_image = false
         break
+      when %r{yfrog.com/}
+        find_image_url(status, url.gsub("/yfrog.com/", "/twitter.yfrog.com/").concat("?sa=0"),
+                       '//meta[@name="twitter:image"]', 'value')
+        break
+      else
+        no_image = true
       end
     end
     status.done if no_image
