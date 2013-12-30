@@ -176,6 +176,11 @@
                     </scrollView>
                     <toolbarItems>
                         <barButtonItem style="plain" systemItem="flexibleSpace" id="Xqc-tn-M04"/>
+                        <barButtonItem image="delete.png" id="xaF-yR-mmC">
+                            <connections>
+                                <action selector="delete_text:" destination="bcE-sK-ag2" id="bFV-0A-Uji"/>
+                            </connections>
+                        </barButtonItem>
                         <barButtonItem image="reblog.png" id="ayV-CD-dYN">
                             <connections>
                                 <action selector="reblog:" destination="bcE-sK-ag2" id="hLU-q3-dJ1"/>
@@ -229,7 +234,8 @@
         </scene>
     </scenes>
     <resources>
-        <image name="reblog.png" width="60" height="60"/>
+        <image name="delete.png" width="44" height="44"/>
+        <image name="reblog.png" width="44" height="44"/>
         <image name="settings.png" width="26" height="26"/>
     </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">

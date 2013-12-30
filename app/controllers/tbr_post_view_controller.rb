@@ -89,6 +89,11 @@ class TbrPostViewController < UIViewController
                                completion:nil)
   end
 
+  def delete_text sender
+    @postTextView.text = ""
+    @postTextView.setNeedsDisplay
+  end
+
   def reblog sender
     link = @status.link
     source = @status.image_url
