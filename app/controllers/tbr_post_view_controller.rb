@@ -145,6 +145,8 @@ class TbrPostViewController < UIViewController
   def image_tapped
     if @orig_image_frame
       UIView.animateWithDuration(0.2, animations: -> {
+                                   @postImageView.frame = [[160,240], [0,0]]
+                                 }, completion: -> (finished) {
                                    @postImageView.frame = @orig_image_frame
                                    @orig_image_frame = nil
                                    postTextView.hidden = false
