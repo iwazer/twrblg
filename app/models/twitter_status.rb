@@ -1,16 +1,5 @@
-class TwitterStatus < NanoStore::Model
+class TwitterStatus < CDQManagedObject
   extend DateFormat
-
-  attribute :id
-  attribute :list_id
-  attribute :status_id
-  attribute :created_at
-  attribute :profile_image_url
-  attribute :image_url
-  attribute :text
-  attribute :link
-  attribute :processed
-
   LOAD_COUNT = 50
 
   attr_accessor :original
@@ -25,7 +14,7 @@ class TwitterStatus < NanoStore::Model
 
   def done
     self.processed = true
-    self.save
+    cdq.save
   end
 
   class << self
@@ -36,7 +25,7 @@ class TwitterStatus < NanoStore::Model
     def from_api list_id, hash
       status_id = hash["id"].to_i
       id = to_id(status_id)
-      exists = find({id: id}).first
+      exists = where(id: id).first
       return exists if exists
       profile_image_url = if hash["user"] && hash["user"]["profile_image_url"]
                             hash["user"]["profile_image_url"]
@@ -53,35 +42,35 @@ class TwitterStatus < NanoStore::Model
                            list_id: list_id.to_i,
                            processed: true,
                            text: "fetch for non-acquisition...")
+      cdq.save
     end
 
     def max_id list_id
-      status = find({list_id: list_id.to_i}, {sort: {id: :desc}}).first
+      status = where(list_id: list_id.to_i).sort_by(:id, :descending).first
       if status
         status.status_id
       end
     end
 
     def load_statuses list_id, complete
-      Dispatch::Queue.concurrent.async {
-        complete.call(find({list_id: list_id.to_i}, {sort: {id: :desc}}).first(LOAD_COUNT))
-      }
+      #Dispatch::Queue.concurrent.async {
+        complete.call(where(list_id: list_id.to_i).sort_by(:id, :descending).limit(LOAD_COUNT).all.to_a)
+      #}
     end
 
     def store_statuses array
       array.each_with_index do |status, i|
-        for_upd = find({id: status.id}).first
+        for_upd = where(id: status.id).first
         if for_upd
           for_upd.original = status.original
           puts "update: #{for_upd.id}"
-          for_upd.save
           array[i] = for_upd
         else
           status.stored = true
-          puts "create: #{status.id}"
-          status.save
         end
+        cdq.save
       end
     end
   end
+
 end

@@ -44,3 +44,4 @@ Motion::Project::App.setup do |app|
   end
 
 end
+task :"build:simulator" => :"schema:build"

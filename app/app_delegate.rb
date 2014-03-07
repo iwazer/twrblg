@@ -1,8 +1,11 @@
 class AppDelegate
+  include CDQ
+
   attr_accessor :window
   attr_reader :twitter
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
+    cdq.setup
     @window.styleMode = PXStylingNormal
 
     TMAPIClient.sharedInstance.OAuthConsumerKey = 'TM-CONSUMER-KEY'.info_plist
@@ -14,7 +17,6 @@ class AppDelegate
       TMAPIClient.sharedInstance.OAuthTokenSecret = account.token_secret
     end
 
-    NanoStore.shared_store = NanoStore.store(:file, "twrblg01.db".document)
     true
   end
 

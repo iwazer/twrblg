@@ -33,7 +33,6 @@ class TwListStatusesViewController < UITableViewController
     }
     start_activity_indicator
     TwitterStatus.load_statuses(@list_id, completed)
-    
   end
 
   def fetch_statuses gap=:bottom
