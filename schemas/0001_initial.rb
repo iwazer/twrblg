@@ -12,9 +12,9 @@ schema "0001 initial" do
 
   entity "TwitterStatus" do
     string :id, optional: false
-    integer64 :list_id, optional: false
-    integer64 :status_id, optional: false
-    datetime :created_at, optional: false
+    integer64 :list_id
+    integer64 :status_id
+    datetime :created_at
     string :profile_image_url
     string :image_url
     string :text

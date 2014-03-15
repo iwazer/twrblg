@@ -13,6 +13,7 @@ class TbrPostViewController < UIViewController
     navigationItem.setRightBarButtonItem(nil, animated:true)
     setup_spinner(@postImageView)
     #Dispatch::Queue.concurrent.async {
+      #cdq.contexts.new(NSPrivateQueueConcurrencyType)
       start_activity_indicator
       image = @status.image_url.nsurl.fetch_image
       #Dispatch::Queue.main.async {

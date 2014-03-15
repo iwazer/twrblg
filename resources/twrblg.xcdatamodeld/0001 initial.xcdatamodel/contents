@@ -8,9 +8,9 @@
   </entity>
   <entity name="TwitterStatus" syncable="YES" representedClassName="TwitterStatus">
     <attribute optional="NO" syncable="YES" attributeType="String" name="id"/>
-    <attribute optional="NO" syncable="YES" attributeType="Integer 64" name="list_id" defaultValueString="0"/>
-    <attribute optional="NO" syncable="YES" attributeType="Integer 64" name="status_id" defaultValueString="0"/>
-    <attribute optional="NO" syncable="YES" attributeType="Date" name="created_at"/>
+    <attribute optional="YES" syncable="YES" attributeType="Integer 64" name="list_id" defaultValueString="0"/>
+    <attribute optional="YES" syncable="YES" attributeType="Integer 64" name="status_id" defaultValueString="0"/>
+    <attribute optional="YES" syncable="YES" attributeType="Date" name="created_at"/>
     <attribute optional="YES" syncable="YES" attributeType="String" name="profile_image_url"/>
     <attribute optional="YES" syncable="YES" attributeType="String" name="image_url"/>
     <attribute optional="YES" syncable="YES" attributeType="String" name="text"/>

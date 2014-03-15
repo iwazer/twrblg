@@ -47,7 +47,7 @@ class TwListStatusesViewController < UITableViewController
                                       maxID: @max_id,
                                       count: FETCH_COUNT,
                                       includeEntities: nil,
-                                      includeRetweets: 0,
+                                      includeRetweets: nil,
                                       successBlock: success,
                                       errorBlock: -> (error) {
                                         App.alert(error.localizedDescription.to_s)
@@ -111,7 +111,8 @@ class TwListStatusesViewController < UITableViewController
         @max_id = @status.below_me_max
         @since_id = @data.gap_id = @data.rows[indexPath.row + 1].status_id
         @data.rows.delete_at(indexPath.row)
-        @status.delete
+        @status.destroy
+        cdq.save
         fetch_statuses(:gap)
       elsif @status.image_url
         self.performSegueWithIdentifier("TbrPostView", sender:self)
@@ -199,7 +200,7 @@ class TwListStatusesViewController < UITableViewController
         find_image_url(status, url.concat("/full").gsub("//", "/"),
                        '//meta[@name="twitter:image"]', 'value')
         break
-      when %r{twicolle.com/}
+      when %r{/twicolle.com/}
         find_image_url(status, url, '//img[@itemprop="image"]', 'src')
         break
       when %r{inupple.com/}
@@ -221,7 +222,10 @@ class TwListStatusesViewController < UITableViewController
   end
 
   def refresh timer
-    if @data.rows.reject{|status| status.processed}.count == 0
+    tags = @data.rows.reject do |status|
+      status.processed
+    end
+    if tags.count == 0
       if timer
         timer.invalidate
         @end_refreshing.try(:call)

@@ -1,14 +1,7 @@
-GIT
-  remote: https://github.com/Pixate/RubyMotion-Pixate.git
-  revision: 2fc91946929ff7943e36fa84f97a5f04b051e2d6
-  specs:
-    motion-pixate (2.0)
-      sass
-
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (3.2.14)
+    activesupport (3.2.17)
       i18n (~> 0.6, >= 0.6.4)
       multi_json (~> 1.0)
     bubble-wrap (1.3.0)
@@ -16,51 +9,60 @@ GEM
     cdq (0.1.7)
       motion-yaml
       ruby-xcdm (~> 0.0, >= 0.0.6)
-    claide (0.3.2)
-    cocoapods (0.25.0)
-      activesupport (~> 3.0)
-      claide (~> 0.3.2)
-      cocoapods-core (= 0.25.0)
-      cocoapods-downloader (~> 0.2.0)
+    claide (0.4.0)
+    cocoapods (0.29.0)
+      activesupport (>= 3.2.15, < 4)
+      claide (~> 0.4.0)
+      cocoapods-core (= 0.29.0)
+      cocoapods-downloader (~> 0.3.0)
+      cocoapods-try-release-fix (~> 0.1.1)
       colored (~> 1.2)
       escape (~> 0.0.4)
-      json (~> 1.8)
-      open4 (~> 1.3)
-      xcodeproj (~> 0.11.0)
-    cocoapods-core (0.25.0)
-      activesupport (~> 3.0)
-      json (~> 1.8)
+      json_pure (~> 1.8)
       nap (~> 0.5)
-    cocoapods-downloader (0.2.0)
+      open4 (~> 1.3)
+      xcodeproj (~> 0.14.1)
+    cocoapods-core (0.29.0)
+      activesupport (>= 3.2.15, < 4)
+      fuzzy_match (~> 2.0.4)
+      json_pure (~> 1.8)
+      nap (~> 0.5)
+    cocoapods-downloader (0.3.0)
+    cocoapods-try-release-fix (0.1.2)
     colored (1.2)
     escape (0.0.4)
-    i18n (0.6.5)
-    ib (0.3.5)
+    fuzzy_match (2.0.4)
+    i18n (0.6.9)
+    ib (0.4.3)
       thor (>= 0.15.4)
       tilt (>= 1.4.1)
       xcodeproj (>= 0.11.1)
-    json (1.8.0)
-    motion-cocoapods (1.3.7)
-      cocoapods (>= 0.17.0)
+    json_pure (1.8.1)
+    motion-cocoapods (1.4.0)
+      cocoapods (>= 0.26.2)
     motion-hpple (0.3.1)
       motion-cocoapods (>= 1.3.0.rc1)
+    motion-pixatefreestyle (2.1)
+      sass
     motion-yaml (1.2)
-    multi_json (1.8.0)
-    nap (0.5.1)
-    open4 (1.3.0)
+    multi_json (1.9.0)
+    nap (0.6.0)
+    open4 (1.3.3)
     plist (3.1.0)
-    rake (10.1.0)
-    ruby-xcdm (0.0.6)
+    rake (10.1.1)
+    ruby-xcdm (0.0.7)
       activesupport (~> 3.2)
       builder (~> 3.2)
       plist (~> 3.1)
-    sass (3.2.12)
-    sugarcube (1.1.0)
+    sass (3.3.0)
+      rake
+    sugarcube (1.5.4)
     thor (0.18.1)
-    tilt (1.4.1)
-    xcodeproj (0.11.1)
+    tilt (2.0.0)
+    xcodeproj (0.14.1)
       activesupport (~> 3.0)
       colored (~> 1.2)
+      rake
 
 PLATFORMS
   ruby
@@ -71,7 +73,7 @@ DEPENDENCIES
   ib
   motion-cocoapods
   motion-hpple
-  motion-pixate!
+  motion-pixatefreestyle
   rake
   ruby-xcdm
   sugarcube

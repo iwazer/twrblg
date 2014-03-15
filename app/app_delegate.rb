@@ -6,7 +6,6 @@ class AppDelegate
 
   def application(application, didFinishLaunchingWithOptions:launchOptions)
     cdq.setup
-    @window.styleMode = PXStylingNormal
 
     TMAPIClient.sharedInstance.OAuthConsumerKey = 'TM-CONSUMER-KEY'.info_plist
     TMAPIClient.sharedInstance.OAuthConsumerSecret = 'TM-SECRET-KEY'.info_plist

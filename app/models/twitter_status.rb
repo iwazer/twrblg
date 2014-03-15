@@ -38,11 +38,14 @@ class TwitterStatus < CDQManagedObject
     end
 
     def create_gap list_id, status_id, diff=1
-      TwitterStatus.create(id: to_id(status_id, diff),
-                           list_id: list_id.to_i,
-                           processed: true,
-                           text: "fetch for non-acquisition...")
-      cdq.save
+      id = to_id(status_id, diff)
+      unless TwitterStatus.where(id: id).first
+        status = TwitterStatus.create(id: id, list_id: list_id.to_i,
+                             created_at: Time.now, processed: true,
+                             text: "fetch for non-acquisition...")
+        cdq.save
+        status
+      end
     end
 
     def max_id list_id
@@ -54,7 +57,8 @@ class TwitterStatus < CDQManagedObject
 
     def load_statuses list_id, complete
       #Dispatch::Queue.concurrent.async {
-        complete.call(where(list_id: list_id.to_i).sort_by(:id, :descending).limit(LOAD_COUNT).all.to_a)
+        cdq.contexts.new(NSPrivateQueueConcurrencyType)
+        complete.call(where(list_id: list_id.to_i).sort_by(:id, :descending).limit(LOAD_COUNT).all.to_a.clone)
       #}
     end
 
