@@ -80,12 +80,12 @@ class TwListStatusesViewController < UITableViewController
         image = status.profile_image_url.nsurl.fetch_image
         cell.imageView.image = image
       end
+      cell.textLabel.text = status.text
       if status.image_url
         cell.styleClass = "exist-image-cell"
       else
         cell.styleClass = "no-image-cell"
       end
-      cell.textLabel.text = status.text
       info = unless status.gap?
                "#{status.created_at.try(:strftime, "%Y/%m/%d %H:%M:%S")} #{status.id}"
              end
@@ -101,7 +101,7 @@ class TwListStatusesViewController < UITableViewController
     cell.detailTextLabel.text = nil
     cell.textLabel.text = nil
     cell.imageView.image = nil
-    cell.styleClass = "exist-image-cell"
+    #cell.styleClass = "exist-image-cell"
   end
 
   def tableView tableView, didSelectRowAtIndexPath:indexPath

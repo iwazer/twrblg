@@ -1,5 +1,6 @@
 navigation-bar {
-  background-color : linear-gradient(#222222, #202020);
+  color: #eee;
+  background-color : #333;
 }
 
 table-view {
