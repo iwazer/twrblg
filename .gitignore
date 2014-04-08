@@ -19,3 +19,4 @@ vendor
 .ruby-gemset
 .dat*
 ib.xcodeproj
+.bundle
