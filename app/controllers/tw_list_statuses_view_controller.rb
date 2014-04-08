@@ -76,20 +76,22 @@ class TwListStatusesViewController < UITableViewController
     cell_clear(cell)
     if indexPath.row < @data.rows.count
       status = @data.rows[indexPath.row]
-      if status.profile_image_url
-        image = status.profile_image_url.nsurl.fetch_image
-        cell.imageView.image = image
+      if status
+        if status.profile_image_url
+          image = status.profile_image_url.nsurl.fetch_image
+          cell.imageView.image = image
+        end
+        cell.textLabel.text = status.text
+        if status.image_url
+          cell.styleClass = "exist-image-cell"
+        else
+          cell.styleClass = "no-image-cell"
+        end
+        info = unless status.gap?
+                 "#{status.created_at.try(:strftime, "%Y/%m/%d %H:%M:%S")} #{status.id}"
+               end
+        cell.detailTextLabel.text = info
       end
-      cell.textLabel.text = status.text
-      if status.image_url
-        cell.styleClass = "exist-image-cell"
-      else
-        cell.styleClass = "no-image-cell"
-      end
-      info = unless status.gap?
-               "#{status.created_at.try(:strftime, "%Y/%m/%d %H:%M:%S")} #{status.id}"
-             end
-      cell.detailTextLabel.text = info
     else
       cell.detailTextLabel.text = "Older"
       cell.imageView.image = nil
@@ -107,12 +109,12 @@ class TwListStatusesViewController < UITableViewController
   def tableView tableView, didSelectRowAtIndexPath:indexPath
     if indexPath.row < @data.rows.count
       @status = @data.rows[indexPath.row]
+      return unless @status
       if @status.gap? && indexPath.row > 0
         @max_id = @status.below_me_max
         @since_id = @data.gap_id = @data.rows[indexPath.row + 1].status_id
         @data.rows.delete_at(indexPath.row)
         @status.destroy
-        cdq.save
         fetch_statuses(:gap)
       elsif @status.image_url
         self.performSegueWithIdentifier("TbrPostView", sender:self)
@@ -180,6 +182,7 @@ class TwListStatusesViewController < UITableViewController
   end
 
   def candidate_image_url status
+    return unless status.original
     entities = status.original["entities"]
     if entities["media"]
       set_status(status, entities["media"].first["media_url"],
@@ -223,7 +226,7 @@ class TwListStatusesViewController < UITableViewController
 
   def refresh timer
     tags = @data.rows.reject do |status|
-      status.processed
+      status.try(:processed)
     end
     if tags.count == 0
       if timer

@@ -40,9 +40,10 @@ class TwitterStatus < CDQManagedObject
     def create_gap list_id, status_id, diff=1
       id = to_id(status_id, diff)
       unless TwitterStatus.where(id: id).first
+        status = nil
         status = TwitterStatus.create(id: id, list_id: list_id.to_i,
-                             created_at: Time.now, processed: true,
-                             text: "fetch for non-acquisition...")
+                                      created_at: Time.now, processed: true,
+                                      text: "fetch for non-acquisition...")
         cdq.save
         status
       end
@@ -56,10 +57,8 @@ class TwitterStatus < CDQManagedObject
     end
 
     def load_statuses list_id, complete
-      #Dispatch::Queue.concurrent.async {
-        cdq.contexts.new(NSPrivateQueueConcurrencyType)
-        complete.call(where(list_id: list_id.to_i).sort_by(:id, :descending).limit(LOAD_COUNT).all.to_a.clone)
-      #}
+      complete.call(where(list_id: list_id.to_i).sort_by(:id, :descending).limit(LOAD_COUNT).all.to_a.clone)
+      cdq.save
     end
 
     def store_statuses array
@@ -67,13 +66,12 @@ class TwitterStatus < CDQManagedObject
         for_upd = where(id: status.id).first
         if for_upd
           for_upd.original = status.original
-          puts "update: #{for_upd.id}"
           array[i] = for_upd
         else
           status.stored = true
         end
-        cdq.save
       end
+      cdq.save
     end
   end
 

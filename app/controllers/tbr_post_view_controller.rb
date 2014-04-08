@@ -12,15 +12,17 @@ class TbrPostViewController < UIViewController
     @inputAccessoryView = XCDFormInputAccessoryView.new
     navigationItem.setRightBarButtonItem(nil, animated:true)
     setup_spinner(@postImageView)
-    #Dispatch::Queue.concurrent.async {
-      #cdq.contexts.new(NSPrivateQueueConcurrencyType)
+    Dispatch::Queue.concurrent.async {
       start_activity_indicator
-      image = @status.image_url.nsurl.fetch_image
-      #Dispatch::Queue.main.async {
+      image = nil
+      cdq.contexts.new(NSMainQueueConcurrencyType) do
+        image = @status.image_url.nsurl.fetch_image
+      end
+      Dispatch::Queue.main.async {
         postImageView.image = image
         stop_activity_indicator
-      #}
-    #}
+      }
+    }
     @account = App.shared.delegate.tumblr_account
     @postBlogLabel.text = @account.blog.try(:name)
     self.postTextView.text = @status.text
