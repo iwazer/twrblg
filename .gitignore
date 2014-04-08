@@ -20,3 +20,4 @@ vendor
 .dat*
 ib.xcodeproj
 .bundle
+Gemfile.lock
