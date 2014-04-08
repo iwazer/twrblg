@@ -1,4 +1,5 @@
 source 'https://rubygems.org'
+#source 'https://s3.amazonaws.com/production.s3.rubygems.org'
 
 gem 'rake'
 gem "motion-cocoapods"
