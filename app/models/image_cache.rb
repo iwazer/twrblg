@@ -13,12 +13,9 @@ class ImageCache < CDQManagedObject
 
     def put url, data
       val = nil
-      cdq.contexts.new(NSMainQueueConcurrencyType) do
-        cache = create(url: url, data: data, created_at: Time.now, referred_at: Time.now)
-        cdq.save
-        val = @@memory_cache.store(url, cache)
-      end
-      val
+      cache = create(url: url, data: data, created_at: Time.now, referred_at: Time.now)
+      cdq.save
+      @@memory_cache.store(url, cache)
     end
   end
 

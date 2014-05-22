@@ -1,6 +1,6 @@
 class NSObject
   def try name, *args
-    unless self.is_a?(NilClass)
+    if self.respond_to?(name)
       self.send(name, *args)
     end
   end

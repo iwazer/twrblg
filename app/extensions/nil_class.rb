@@ -22,4 +22,8 @@ class NilClass
   def empty?
     true
   end
+
+  def try name, *args
+    nil
+  end
 end

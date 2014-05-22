@@ -15,8 +15,6 @@ Motion::Project::App.setup do |app|
   app.name = 'twrblg'
   app.info_plist['UIMainStoryboardFile'] = 'Storyboard'
 
-  app.pixatefreestyle.framework = 'vendor/PixateFreestyle.framework'
-
   app.frameworks += ["Accounts","Twitter","Social","CoreText","QuartzCore","CoreData"]
 
   app.codesign_certificate = ENV['CODESIGN_CERTIFICATE'] if ENV['CODESIGN_CERTIFICATE']
