@@ -1,3 +1,4 @@
+# -*- coding: undecided -*-
 class TwListStatusesViewController < UITableViewController
   extend IB
 
@@ -63,46 +64,37 @@ class TwListStatusesViewController < UITableViewController
   end
 
   def tableView tableView, cellForRowAtIndexPath: indexPath
-    @@cellIdentifier = "TwitterStatusCell"
-    cell = tableView.dequeueReusableCellWithIdentifier(@@cellIdentifier)
-    unless cell
-      cell = UITableViewCell.alloc.initWithStyle(
-        UITableViewCellStyleSubtitle, reuseIdentifier:@@cellIdentifier)
-      cell.textLabel.minimumScaleFactor = 10.0/18
-      cell.textLabel.adjustsFontSizeToFitWidth = true
-      cell.detailTextLabel.minimumScaleFactor = 10.0/18
-      cell.detailTextLabel.adjustsFontSizeToFitWidth = true
-    end
-    cell_clear(cell)
-    if indexPath.row < @data.rows.count
-      status = @data.rows[indexPath.row]
-      if status
-        if status.profile_image_url
-          image = status.profile_image_url.nsurl.fetch_image
-          cell.imageView.image = image
-        end
-        cell.textLabel.text = status.text
-        if status.image_url
-          cell.styleClass = "exist-image-cell"
-        else
-          cell.styleClass = "no-image-cell"
-        end
-        info = unless status.gap?
-                 "#{status.created_at.try(:strftime, "%Y/%m/%d %H:%M:%S")} #{status.id}"
-               end
-        cell.detailTextLabel.text = info
-      end
+    @@gapCellIdentifier = "GapCell"
+    status = @data.rows[indexPath.row]
+    if !status || status.gap?
+      tableView.dequeueReusableCellWithIdentifier(@@gapCellIdentifier,
+                                                  forIndexPath:indexPath)
     else
-      cell.detailTextLabel.text = "Older"
-      cell.imageView.image = nil
+      @@cellIdentifier = "TwitterStatusCell"
+      cell = tableView.dequeueReusableCellWithIdentifier(@@cellIdentifier,
+                                                         forIndexPath:indexPath)
+      cell_clear(cell)
+      if status.profile_image_url
+        image = status.profile_image_url.nsurl.fetch_image
+        cell.image_view.image = image
+      end
+      cell.name_view.text = "#{status.display_name}(#{status.user_id})"
+      cell.status_view.text = status.text
+      cell.time_view.text = status.created_at.strftime("%Y/%m/%d %H:%M")
+      if status.image_url
+        cell.styleClass = "exist-image-cell"
+      else
+        cell.styleClass = "no-image-cell"
+      end
+      cell
     end
-    cell
   end
 
   def cell_clear cell
-    cell.detailTextLabel.text = nil
-    cell.textLabel.text = nil
-    cell.imageView.image = nil
+    cell.image_view.image = nil
+    cell.name_view.text = nil
+    cell.time_view.text = nil
+    cell.status_view.text = nil
     #cell.styleClass = "exist-image-cell"
   end
 
@@ -119,6 +111,7 @@ class TwListStatusesViewController < UITableViewController
       elsif @status.image_url
         self.performSegueWithIdentifier("TbrPostView", sender:self)
       else
+        App.alert("画像がないつぶやきです")
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
       end
     else

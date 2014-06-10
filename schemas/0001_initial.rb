@@ -15,6 +15,8 @@ schema "0001 initial" do
     integer64 :list_id
     integer64 :status_id
     datetime :created_at
+    string :user_id
+    string :display_name
     string :profile_image_url
     string :image_url
     string :text

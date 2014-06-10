@@ -33,6 +33,7 @@ class TwitterStatus < CDQManagedObject
       TwitterStatus.new(id: id,
                         list_id: list_id.to_i, status_id: status_id.to_i,
                         created_at: parse_dt(hash["created_at"]),
+                        user_id: hash["user"]["name"], display_name: hash["user"]["screen_name"],
                         profile_image_url: profile_image_url,
                         text: hash["text"]).tap{|_| _.original = hash}
     end
@@ -42,7 +43,7 @@ class TwitterStatus < CDQManagedObject
       unless TwitterStatus.where(id: id).first
         status = nil
         status = TwitterStatus.create(id: id, list_id: list_id.to_i,
-                                      created_at: Time.now, processed: true,
+                                      created_at: nil, processed: true,
                                       text: "fetch for non-acquisition...")
         cdq.save
         status

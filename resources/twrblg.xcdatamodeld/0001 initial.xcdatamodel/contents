@@ -11,6 +11,8 @@
     <attribute optional="YES" syncable="YES" attributeType="Integer 64" name="list_id" defaultValueString="0"/>
     <attribute optional="YES" syncable="YES" attributeType="Integer 64" name="status_id" defaultValueString="0"/>
     <attribute optional="YES" syncable="YES" attributeType="Date" name="created_at"/>
+    <attribute optional="YES" syncable="YES" attributeType="String" name="user_id"/>
+    <attribute optional="YES" syncable="YES" attributeType="String" name="display_name"/>
     <attribute optional="YES" syncable="YES" attributeType="String" name="profile_image_url"/>
     <attribute optional="YES" syncable="YES" attributeType="String" name="image_url"/>
     <attribute optional="YES" syncable="YES" attributeType="String" name="text"/>
